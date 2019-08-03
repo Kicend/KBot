@@ -17,7 +17,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.8-8"
+wersja = "0.8-9"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -64,24 +64,27 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
-async def odtwarzacz(ctx):
-    while True:
-        gra.append(kolejka[0])
-        url = kolejka.pop(0)
-        async with ctx.typing():
-            player = await YTDLSource.from_url(url, loop=False, stream=True)
-            ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
+class Player():
+    async def odtwarzacz(self, ctx):
+        while True:
+            gra.append(kolejka[0])
+            url = kolejka.pop(0)
+            async with ctx.typing():
+                player = await YTDLSource.from_url(url, loop=False, stream=True)
+                ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
-            await ctx.send('Teraz muzykuję: {}'.format(player.title))
-            piosenki.append(player.title)
-            dictMeta = ytdl.extract_info(url, download=False)
-            a = dictMeta['duration']
-            del piosenki[0]
-            await asyncio.sleep(a)
-            del gra[0]
-            if gra == []:
-                await ctx.send("Odtwarzacz kończy pracę")
-                break
+                await ctx.send('Teraz muzykuję: {}'.format(player.title))
+                piosenki.append(player.title)
+                dictMeta = ytdl.extract_info(url, download=False)
+                a = dictMeta['duration']
+                del piosenki[0]
+                await asyncio.sleep(a)
+                del gra[0]
+                if gra == []:
+                    await ctx.send("Odtwarzacz kończy pracę")
+                    break
+
+player = Player()
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -100,7 +103,7 @@ class Music(commands.Cog):
         """Strumykuj z interneta pieśni"""
         await ctx.send("Rozpoczynam odtwarzanie")
         kolejka.append(url)
-        await odtwarzacz(ctx)
+        await player.odtwarzacz(ctx)
 
     @commands.command(aliases=["kolejkuj"])
     async def add_queue(self, ctx, url):
@@ -118,7 +121,7 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
             await ctx.send("Pieśń została pominięta")
             del gra[0]
-            await odtwarzacz(ctx)
+            await player.odtwarzacz(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
 
