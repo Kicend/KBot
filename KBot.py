@@ -1,8 +1,7 @@
 import asyncio
 import discord
 import youtube_dl
-from discord.ext import commands, tasks
-from discord.ext.commands import Bot
+from discord.ext import commands
 import random
 from random import randrange
 from itertools import cycle
