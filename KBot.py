@@ -17,7 +17,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.8-8"
+wersja = "0.9-1 (AT)"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -96,18 +96,16 @@ class Music(commands.Cog):
     @commands.command(aliases=["strumykuj"])
     async def play(self, ctx, *, url):
         """Strumykuj z interneta pieśni"""
-        await ctx.send("Rozpoczynam odtwarzanie")
-        kolejka.append(url)
-        await odtwarzacz(ctx)
-
-    @commands.command(aliases=["kolejkuj"])
-    async def add_queue(self, ctx, url):
-        """Dodaj pieśń do kolejki"""
-        kolejka.append(url)
-        dictMeta = ytdl.extract_info(url, download=False)
-        title = dictMeta['title']
-        piosenki.append(title)
-        await ctx.send("Pieśń dodana do kolejki")
+        if gra == []:
+            await ctx.send("Rozpoczynam odtwarzanie")
+            kolejka.append(url)
+            await odtwarzacz(ctx)
+        else:
+            kolejka.append(url)
+            dictMeta = ytdl.extract_info(url, download=False)
+            title = dictMeta['title']
+            piosenki.append(title)
+            await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
     async def next(self, ctx):
@@ -215,8 +213,6 @@ class Music(commands.Cog):
             else:
                 await ctx.send("Nie jesteś związany z żadnym czatem głosowym")
                 raise commands.CommandError("Błąd, wleź na jakiś kanał głosowy")
-        elif ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
 
 class Utilities(commands.Cog):
     def __init__(self, bot):
