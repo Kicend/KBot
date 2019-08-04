@@ -12,6 +12,7 @@ from data.autor import autor
 from data.pomocy import pomocy
 from data.pkn import rsp
 
+# Listy do przechowywania danych
 kolejka = []
 piosenki = []
 gra = []
