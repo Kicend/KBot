@@ -18,7 +18,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.9-2"
+wersja = "0.9-3"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors

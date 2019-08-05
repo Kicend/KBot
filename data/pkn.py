@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.8-8
+# Zgodne z KBot 0.9-3
 import discord
 import random
 

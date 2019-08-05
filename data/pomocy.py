@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.8-8
+# Zgodne z KBot 0.9-3
 import discord
 
 async def pomocy(self, ctx, los, wersja):
@@ -13,9 +13,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/3)".format(wersja))
         embed.add_field(name="!wkrocz <nazwa kanału>", value="Wkracza z buta na czat głosowy", inline=False)
         embed.add_field(name="!strumykuj <url>", value="Strumykuj z interneta pieśni", inline=False)
-        embed.add_field(name="!zagraj <lokalizacja pliku (ścieżka bezwzlędna)>",
-                        value="Zagrywa pieśń z lokalnego komputera", inline=False)
-        embed.add_field(name="!kolejkuj <url>", value="Dodaj pieśń do kolejki", inline=False)
+        embed.add_field(name="!zagraj <lokalizacja pliku (ścieżka bezwzlędna)>", value="Zagrywa pieśń z lokalnego komputera", inline=False)
         embed.add_field(name="!następna", value="Przewiń do kolejnej pieśni", inline=False)
         embed.add_field(name="!pętla <0 lub 1>", value="Zapętlij pieśń", inline=False)
         embed.add_field(name="!info", value="Wyświetl informacje o aktualnie granej pieśni", inline=False)
