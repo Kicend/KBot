@@ -2,6 +2,7 @@ import asyncio
 import discord
 import youtube_dl
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 import random
 from random import randrange
 from itertools import cycle
@@ -18,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.9-3"
+wersja = "0.9-4"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -271,18 +272,21 @@ class Administration(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["kopnij"])
+    @has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member, *, reason="Brak"):
         """Kopnij w tyłek"""
         await member.kick(reason=reason)
         await ctx.send("Użyszkodnik został kopnięty\nPowód: {}".format(reason))
 
     @commands.command(aliases=["ukarz"])
+    @has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason="Brak"):
         """Ukarz delikwenta na tułaczkę"""
         await member.ban(reason=reason)
         await ctx.send("Użyszkodnik został skazany na tułaczkę\nPowód: {}".format(reason))
 
     @commands.command(aliases=["wybacz"])
+    @has_permissions(ban_members=True)
     async def unban(self, ctx, *, member):
         """Wybacz mu"""
         banned_users = await ctx.guild.bans()
@@ -297,6 +301,7 @@ class Administration(commands.Cog):
                 return
 
     @commands.command(aliases=["skazańcy"])
+    @has_permissions(manage_guild=True)
     async def banlist(self, ctx):
         """Lista skazańców"""
         banned_users = await ctx.guild.bans()
