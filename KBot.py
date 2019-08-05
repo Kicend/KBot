@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.9-4"
+wersja = "0.10-1"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -348,6 +348,21 @@ async def on_ready():
         game = discord.Game(current_status)
         await bot.change_presence(status=discord.Status.online, activity=game)
         await asyncio.sleep(5)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("Nie masz uprawnień do wykonania tej komendy")
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Nie podałeś wymaganego argumentu")
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.BotMissingPermissions):
+        await ctx.send("Nie mam uprawnień do wykonania tej komendy")
 
 bot.add_cog(Music(bot))
 bot.add_cog(Utilities(bot))
