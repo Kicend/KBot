@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.9-3
+# Zgodne z KBot 0.10-x
 a = ["Brzmi spoko",
     "Nie wiem, nie kontroluję tego",
     "Superaśno przaśno mi",
