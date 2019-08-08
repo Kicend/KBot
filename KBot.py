@@ -81,9 +81,8 @@ async def odtwarzacz(ctx):
             del gra[0]
             if gra == [] and kolejka == []:
                 await ctx.send("Odtwarzacz kończy pracę")
+                await ctx.voice.channel.disconnect()
                 break
-    await asyncio.sleep(30)
-    await ctx.voice.channel.disconnect()
 
 class Music(commands.Cog):
     def __init__(self, bot):
