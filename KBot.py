@@ -83,7 +83,7 @@ async def odtwarzacz(ctx):
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
     await asyncio.sleep(30)
-    await ctx.voice_client.disconnect
+    await ctx.voice_client.channel.disconnect
 
 class Music(commands.Cog):
     def __init__(self, bot):
