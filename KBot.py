@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-2"
+wersja = "0.10-3"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -83,7 +83,7 @@ async def odtwarzacz(ctx):
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
     await asyncio.sleep(30)
-    await ctx.voice_client.channel.disconnect
+    await ctx.voice.channel.disconnect()
 
 class Music(commands.Cog):
     def __init__(self, bot):
