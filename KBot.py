@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-3"
+wersja = "0.10-4"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -179,7 +179,7 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["czyść"])
     async def delete_queue(self, ctx):
-        """Wyczyśc kolejkę z niepotrzebnych pieśni"""
+        """Wyczyść kolejkę z niepotrzebnych pieśni"""
         while kolejka != []:
             del kolejka[0]
         while piosenki != []:
@@ -196,7 +196,7 @@ class Music(commands.Cog):
         embed.set_author(name="Kolejka bota KBot")
 
         for liczba, piosenka in enumerate(piosenki):
-            embed.add_field(name="{} - {}".format(liczba, piosenka), value="Piosenka nr {}".format(liczba), inline=False)
+            embed.add_field(name="{} - {}".format(liczba+1, piosenka), value="Piosenka nr {}".format(liczba), inline=False)
         if piosenki == []:
             await ctx.send("Kolejka jest pusta")
         else:
@@ -265,9 +265,7 @@ class Utilities(commands.Cog):
             await ctx.send("No bez jaj")
 
         if b >= 4:
-            a = str(randrange(1, b))
-
-            await ctx.send("Kostka wypluwa {} szefuńciu".format(a))
+            await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
 
 class Administration(commands.Cog):
     def __init__(self, bot):
