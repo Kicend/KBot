@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-4"
+wersja = "0.10-5"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -68,6 +68,8 @@ async def odtwarzacz(ctx):
     while True:
         gra.append(kolejka[0])
         url = kolejka.pop(0)
+        if piosenki != []:
+            del piosenki[0]
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=False, stream=True)
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
@@ -76,7 +78,6 @@ async def odtwarzacz(ctx):
             piosenki.append(player.title)
             dictMeta = ytdl.extract_info(url, download=False)
             a = dictMeta['duration']
-            del piosenki[0]
             await asyncio.sleep(a)
             del gra[0]
             if gra == [] and kolejka == []:
@@ -196,7 +197,7 @@ class Music(commands.Cog):
         embed.set_author(name="Kolejka bota KBot")
 
         for liczba, piosenka in enumerate(piosenki):
-            embed.add_field(name="{} - {}".format(liczba+1, piosenka), value="Piosenka nr {}".format(liczba), inline=False)
+            embed.add_field(name="{} - {}".format(liczba+1, piosenka), value="Piosenka nr {}".format(liczba+1), inline=False)
         if piosenki == []:
             await ctx.send("Kolejka jest pusta")
         else:
