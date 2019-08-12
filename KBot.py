@@ -68,8 +68,6 @@ async def odtwarzacz(ctx):
     while True:
         gra.append(kolejka[0])
         url = kolejka.pop(0)
-        if piosenki != []:
-            del piosenki[0]
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=False, stream=True)
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
@@ -78,6 +76,7 @@ async def odtwarzacz(ctx):
             piosenki.append(player.title)
             dictMeta = ytdl.extract_info(url, download=False)
             a = dictMeta['duration']
+            del piosenki[0]
             await asyncio.sleep(a)
             del gra[0]
             if gra == [] and kolejka == []:
