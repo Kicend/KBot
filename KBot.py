@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-10"
+wersja = "0.10-11"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -260,15 +260,14 @@ class Utilities(commands.Cog):
         b = int(boki)
         if b == 3:
             await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
-
-        if b == 2:
+        elif b == 2:
             await ctx.send("Rzuć se monetą, a nie głowę zawracasz")
-
-        if b == 1:
+        elif b == 1:
             await ctx.send("No bez jaj")
-
-        if b >= 4:
+        elif b >= 4:
             await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
+        else:
+            await ctx.send("Ty w ogóle widziałeś kostkę do gry?")
 
 class Administration(commands.Cog):
     def __init__(self, bot):
