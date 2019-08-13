@@ -17,6 +17,9 @@ from data.pomocy import pomocy
 from data.pkn import rsp
 from data.coin import coin
 
+# Importowanie konfiguracji bota
+from settings.config import Config
+
 # Listy do przechowywania danych
 kolejka = []
 piosenki = []
@@ -24,8 +27,8 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-1"
-TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
+wersja = "0.11-2"
+TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
 # Suppress noise about console usage from errors
@@ -415,7 +418,7 @@ class Entertainment(commands.Cog):
         "Rzuć monetą"
         await coin(self, ctx)
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(Config.commands_prefix),
                    description='KBot wersja {}'.format(wersja))
 
 bot.remove_command("help")
