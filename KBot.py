@@ -152,7 +152,7 @@ class Music(commands.Cog):
                 await asyncio.sleep(a)
 
     @commands.command(aliases=["teraz"])
-    async def info(self, ctx):
+    async def current(self, ctx):
         """Wyświetl informacje o aktualnie granej pieśni"""
         if gra != []:
             await ctx.send("Aktualnie gra {}".format(gra[0]))
