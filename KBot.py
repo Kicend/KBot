@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-9"
+wersja = "0.10-10"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -106,7 +106,7 @@ class Music(commands.Cog):
             await odtwarzacz(ctx)
         else:
             if url in kolejka:
-                await ctx.send("Nie słyszysz lub nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
+                await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
             else:
                 kolejka.append(url)
                 dictMeta = ytdl.extract_info(url, download=False)
