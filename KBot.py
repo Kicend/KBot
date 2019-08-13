@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-6"
+wersja = "0.10-7"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -75,7 +75,8 @@ async def odtwarzacz(ctx):
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
             dictMeta = ytdl.extract_info(url, download=False)
             a = dictMeta['duration']
-            del piosenki[0]
+            if piosenki != []:
+                del piosenki[0]
             await asyncio.sleep(a)
             del gra[0]
             if gra == [] and kolejka == []:
