@@ -1,6 +1,9 @@
 import asyncio
 import discord
 import youtube_dl
+import psutil
+import os
+import time
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
@@ -12,6 +15,7 @@ from data.zapytaj import answers
 from data.autor import autor
 from data.pomocy import pomocy
 from data.pkn import rsp
+from data.coin import coin
 
 # Listy do przechowywania danych
 kolejka = []
@@ -19,8 +23,10 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-11"
+# Parametry bota
+wersja = "0.11-1"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
+boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -240,32 +246,47 @@ class Utilities(commands.Cog):
                        "https://discordapp.com/oauth2/authorize?client_id=570288534020161538&permissions=3230726&scope=bot")
 
     @commands.command()
-    async def ping(self, ctx):
-        """Dowiedz się jak słabego mam neta"""
-        await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
+    async def info(self, ctx):
+        """Komenda do sprawdzenia informacji o bocie"""
+        process = psutil.Process(os.getpid())
+        embed = discord.Embed(
+            colour=discord.Colour.dark_red()
+        )
 
-    @commands.command(aliases=["zapytaj"])
-    async def question(self, ctx, *, pytanie):
-        """Zapytaj mnie o cokolwiek"""
-        odpowiedzi = answers
-        await ctx.send("Pytanie: {}\nOdpowiedź: {}".format(pytanie, random.choice(odpowiedzi)))
+        embed.set_author(name="Informacje o bocie")
+        embed.add_field(name="Godność:", value="Nick: CherryBot#1453, ID: 596419695389966346", inline=False)
+        embed.add_field(name="Uruchomiony:", value=boot_date, inline=False)
+        embed.add_field(name="Pomiar pulsu:", value="{} ms".format(round(bot.latency * 1000)), inline=False)
+        embed.add_field(name="RAM:", value="{} MB".format(round(process.memory_info().rss / (1024 * 1024))),
+                        inline=False)
+        embed.add_field(name="Wersja:", value=wersja, inline=False)
+        embed.add_field(name="Biblioteka", value="discord.py 1.2.3", inline=False)
+        embed.add_field(name="Autor:", value="Kicend#2690", inline=False)
+        await ctx.send(embed=embed)
 
-    @commands.command(aliases=["pkn"])
-    async def rsp(self, ctx, hand):
-        await rsp(self, ctx, hand)
+    @commands.command()
+    async def guild(self, ctx):
+        """Komenda do uzyskania informacji o serwerze"""
+        server = bot.get_guild(591549514247176205)
+        roles = [role for role in server.roles]
+        embed = discord.Embed(
+            colour=discord.Colour.dark_red()
+        )
 
-    @commands.command(aliases=["kostka"])
-    async def dice(self, ctx, boki):
-        """Weźse wylosuj jakąś liczbunie szefuńciu"""
-        b = int(boki)
-        if b == 1:
-            await ctx.send("No bez jaj")
-        elif b == 2:
-            await ctx.send("Rzuć se monetą, a nie głowę zawracasz")
-        elif b == 3:
-            await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
-        elif b >= 4:
-            await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
+        embed.set_author(name="Informacje o serwerze")
+        embed.set_thumbnail(url=server.icon_url)
+        embed.add_field(name="Nazwa serwera:", value=server.name, inline=False)
+        embed.add_field(name="ID serwera:", value=server.id, inline=False)
+        embed.add_field(name="Dane właściciela:", value="Nick: {}, ID: {}".format(server.owner, server.owner_id),
+                        inline=False)
+        embed.add_field(name="Role ({}):".format(len(roles)), value="".join([role.mention for role in roles]),
+                        inline=False)
+        embed.add_field(name="Region serwera:", value=server.region, inline=False)
+        embed.add_field(name="Serwer założony:", value=server.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),
+                        inline=False)
+        embed.add_field(name="Liczba użytkowników:", value=str(len(server.members)), inline=False)
+        embed.set_footer(text="Prośba o dane od {}".format(ctx.author), icon_url=ctx.author.avatar_url)
+        await ctx.send(embed=embed)
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -326,6 +347,73 @@ class Administration(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("Lista skazanych jest pusta")
+
+    @commands.command()
+    @has_permissions(manage_messages=True)
+    async def clear(self, ctx, amount: int, member: discord.Member = None):
+        "Komenda do czyszczenia historii czatu"
+        deleted = await ctx.channel.purge(limit=amount, check=member)
+        if len(deleted) == 1:
+            await ctx.send("Usunięto {} wiadomość".format(len(deleted)))
+        else:
+            await ctx.send("Usunięto {} wiadomości".format(len(deleted)))
+
+class Entertainment(commands.Cog):
+    def __init__(self):
+        self.bot = bot
+
+    @commands.command(aliases=["zgadywanka"])
+    async def guess(self, ctx):
+        """Odgadnij liczbę"""
+        numbers = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+
+        await ctx.send("Odgadnij liczbę od 1 do 10. Masz tylko 5 sekund.")
+        cho = random.choice(numbers)
+
+        try:
+            msg = await bot.wait_for("message", timeout=5)
+            if ctx.author.bot:
+                return None
+            elif msg.content.startswith(numbers):
+                if msg.content == cho:
+                    await ctx.send("Zgadłeś")
+                else:
+                    await ctx.send("Nie zgadłeś. Niestety")
+        except asyncio.TimeoutError:
+            await ctx.send("Czas minął. To była liczba {}".format(cho))
+
+    @commands.command()
+    async def ping(self, ctx):
+        """Dowiedz się jak słabego mam neta"""
+        await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
+
+    @commands.command(aliases=["zapytaj"])
+    async def question(self, ctx, *, pytanie):
+        """Zapytaj mnie o cokolwiek"""
+        odpowiedzi = answers
+        await ctx.send("Pytanie: {}\nOdpowiedź: {}".format(pytanie, random.choice(odpowiedzi)))
+
+    @commands.command(aliases=["pkn"])
+    async def rsp(self, ctx, hand):
+        await rsp(self, ctx, hand)
+
+    @commands.command(aliases=["kostka"])
+    async def dice(self, ctx, boki):
+        """Weźse wylosuj jakąś liczbunie szefuńciu"""
+        b = int(boki)
+        if b == 1:
+            await ctx.send("No bez jaj")
+        elif b == 2:
+            await ctx.send("Rzuć se monetą, a nie głowę zawracasz")
+        elif b == 3:
+            await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
+        elif b >= 4:
+            await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
+
+    @commands.command(aliases=["moneta"])
+    async def coin(self, ctx):
+        "Rzuć monetą"
+        await coin(self, ctx)
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"),
                    description='KBot wersja {}'.format(wersja))
