@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-5"
+wersja = "0.10-6"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -73,7 +73,6 @@ async def odtwarzacz(ctx):
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
-            piosenki.append(player.title)
             dictMeta = ytdl.extract_info(url, download=False)
             a = dictMeta['duration']
             del piosenki[0]
