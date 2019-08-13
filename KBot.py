@@ -107,11 +107,12 @@ class Music(commands.Cog):
         else:
             if url in kolejka:
                 await ctx.send("Nie słyszysz lub nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
-            kolejka.append(url)
-            dictMeta = ytdl.extract_info(url, download=False)
-            title = dictMeta['title']
-            piosenki.append(title)
-            await ctx.send("Pieśń dodana do kolejki")
+            else:
+                kolejka.append(url)
+                dictMeta = ytdl.extract_info(url, download=False)
+                title = dictMeta['title']
+                piosenki.append(title)
+                await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
     async def next(self, ctx):
