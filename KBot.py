@@ -8,7 +8,7 @@ from random import randrange
 from itertools import cycle
 
 # Importowanie modułów z folderu data
-from data.zapytaj import a
+from data.zapytaj import answers
 from data.autor import autor
 from data.pomocy import pomocy
 from data.pkn import rsp
@@ -19,7 +19,7 @@ piosenki = []
 gra = []
 users = []
 
-wersja = "0.10-7"
+wersja = "0.10-8"
 TOKEN = 'NTcwMjg4NTM0MDIwMTYxNTM4.XL9qbA.z2aE8-wAdad78ox3Dt-N8oswTVA'
 
 # Suppress noise about console usage from errors
@@ -244,7 +244,7 @@ class Utilities(commands.Cog):
     @commands.command(aliases=["zapytaj"])
     async def question(self, ctx, *, pytanie):
         """Zapytaj mnie o cokolwiek"""
-        odpowiedzi = a
+        odpowiedzi = answers
         await ctx.send("Pytanie: {}\nOdpowiedź: {}".format(pytanie, random.choice(odpowiedzi)))
 
     @commands.command(aliases=["pkn"])
