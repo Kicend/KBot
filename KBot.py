@@ -258,16 +258,14 @@ class Utilities(commands.Cog):
     async def dice(self, ctx, boki):
         """Weźse wylosuj jakąś liczbunie szefuńciu"""
         b = int(boki)
-        if b == 3:
-            await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
+        if b == 1:
+            await ctx.send("No bez jaj")
         elif b == 2:
             await ctx.send("Rzuć se monetą, a nie głowę zawracasz")
-        elif b == 1:
-            await ctx.send("No bez jaj")
+        elif b == 3:
+            await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
         elif b >= 4:
             await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
-        else:
-            await ctx.send("Ty w ogóle widziałeś kostkę do gry?")
 
 class Administration(commands.Cog):
     def __init__(self, bot):
