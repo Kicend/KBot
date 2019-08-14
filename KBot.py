@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-3"
+wersja = "0.11-5"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -249,7 +249,7 @@ class Utilities(commands.Cog):
                        "https://discordapp.com/oauth2/authorize?client_id=570288534020161538&permissions=3230726&scope=bot")
 
     @commands.command()
-    async def info(self, ctx):
+    async def bot_info(self, ctx):
         """Komenda do sprawdzenia informacji o bocie"""
         process = psutil.Process(os.getpid())
         embed = discord.Embed(
@@ -257,7 +257,7 @@ class Utilities(commands.Cog):
         )
 
         embed.set_author(name="Informacje o bocie")
-        embed.add_field(name="Godność:", value="Nick: CherryBot#1453, ID: 596419695389966346", inline=False)
+        embed.add_field(name="Godność:", value="Nick: KBot#0091, ID: 570288534020161538", inline=False)
         embed.add_field(name="Uruchomiony:", value=boot_date, inline=False)
         embed.add_field(name="Pomiar pulsu:", value="{} ms".format(round(bot.latency * 1000)), inline=False)
         embed.add_field(name="RAM:", value="{} MB".format(round(process.memory_info().rss / (1024 * 1024))),
@@ -271,6 +271,7 @@ class Utilities(commands.Cog):
     async def guild(self, ctx):
         """Komenda do uzyskania informacji o serwerze"""
         guild_id = discord.Guild.id
+        print(guild_id)
         server = bot.get_guild(guild_id)
         roles = [role for role in server.roles]
         embed = discord.Embed(
@@ -291,6 +292,11 @@ class Utilities(commands.Cog):
         embed.add_field(name="Liczba użytkowników:", value=str(len(server.members)), inline=False)
         embed.set_footer(text="Prośba o dane od {}".format(ctx.author), icon_url=ctx.author.avatar_url)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def ping(self, ctx):
+        """Dowiedz się jak słabego mam neta"""
+        await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -385,11 +391,6 @@ class Entertainment(commands.Cog):
                     await ctx.send("Nie zgadłeś. Niestety")
         except asyncio.TimeoutError:
             await ctx.send("Czas minął. To była liczba {}".format(cho))
-
-    @commands.command()
-    async def ping(self, ctx):
-        """Dowiedz się jak słabego mam neta"""
-        await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
 
     @commands.command(aliases=["zapytaj"])
     async def question(self, ctx, *, pytanie):
