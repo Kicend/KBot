@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-6"
+wersja = "0.11-7"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 

@@ -5,7 +5,7 @@ async def user(self, ctx, user_ext_info: discord.Member):
     roles = [role for role in user_ext_info.roles]
 
     embed = discord.Embed(
-        colour = discord.Colour.dark_red()
+        colour = discord.Colour.blue()
     )
 
     embed.set_author(name="Informacje o użytkowniku")
