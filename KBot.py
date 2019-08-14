@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-2"
+wersja = "0.11-3"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -253,7 +253,7 @@ class Utilities(commands.Cog):
         """Komenda do sprawdzenia informacji o bocie"""
         process = psutil.Process(os.getpid())
         embed = discord.Embed(
-            colour=discord.Colour.dark_red()
+            colour=discord.Colour.blue()
         )
 
         embed.set_author(name="Informacje o bocie")
@@ -270,10 +270,11 @@ class Utilities(commands.Cog):
     @commands.command()
     async def guild(self, ctx):
         """Komenda do uzyskania informacji o serwerze"""
-        server = bot.get_guild(591549514247176205)
+        guild_id = discord.Guild.id
+        server = bot.get_guild(guild_id)
         roles = [role for role in server.roles]
         embed = discord.Embed(
-            colour=discord.Colour.dark_red()
+            colour=discord.Colour.blue()
         )
 
         embed.set_author(name="Informacje o serwerze")
