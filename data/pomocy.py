@@ -65,4 +65,6 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!zgadywanka", value="Odgadnij liczbę", inline=False)
         embed.add_field(name="!moneta", value="Rzuć monetą", inline=False)
 
+        await ctx.send(embed=embed)
+
 
