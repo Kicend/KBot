@@ -16,6 +16,7 @@ from data.autor import autor
 from data.pomocy import pomocy
 from data.pkn import rsp
 from data.coin import coin
+from data.user import user
 
 # Importowanie konfiguracji bota
 from settings.config import Config
@@ -27,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-5"
+wersja = "0.11-6"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -249,7 +250,7 @@ class Utilities(commands.Cog):
                        "https://discordapp.com/oauth2/authorize?client_id=570288534020161538&permissions=3230726&scope=bot")
 
     @commands.command()
-    async def bot_info(self, ctx):
+    async def info_bot(self, ctx):
         """Komenda do sprawdzenia informacji o bocie"""
         process = psutil.Process(os.getpid())
         embed = discord.Embed(
@@ -270,9 +271,7 @@ class Utilities(commands.Cog):
     @commands.command()
     async def guild(self, ctx):
         """Komenda do uzyskania informacji o serwerze"""
-        guild_id = discord.Guild.id
-        print(guild_id)
-        server = bot.get_guild(guild_id)
+        server = bot.get_guild(366266818077130753)
         roles = [role for role in server.roles]
         embed = discord.Embed(
             colour=discord.Colour.blue()
@@ -297,6 +296,12 @@ class Utilities(commands.Cog):
     async def ping(self, ctx):
         """Dowiedz się jak słabego mam neta"""
         await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
+
+    @commands.command()
+    @has_permissions(manage_messages=True)
+    async def user(self, ctx, user_ext_info: discord.Member):
+        "Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"
+        await user(self, ctx, user_ext_info)
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -369,7 +374,7 @@ class Administration(commands.Cog):
             await ctx.send("Usunięto {} wiadomości".format(len(deleted)))
 
 class Entertainment(commands.Cog):
-    def __init__(self):
+    def __init__(self, bot):
         self.bot = bot
 
     @commands.command(aliases=["zgadywanka"])
@@ -460,4 +465,5 @@ async def on_command_error(ctx, error):
 bot.add_cog(Music(bot))
 bot.add_cog(Utilities(bot))
 bot.add_cog(Administration(bot))
+bot.add_cog(Entertainment(bot))
 bot.run(TOKEN)
