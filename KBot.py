@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.11-7"
+wersja = "0.12-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -268,7 +268,7 @@ class Utilities(commands.Cog):
         embed.add_field(name="Autor:", value="Kicend#2690", inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["serwer"])
     async def guild(self, ctx):
         """Komenda do uzyskania informacji o serwerze"""
         server = bot.get_guild(366266818077130753)
@@ -297,7 +297,7 @@ class Utilities(commands.Cog):
         """Dowiedz się jak słabego mam neta"""
         await ctx.send("Pong! {} ms".format(round(bot.latency * 1000)))
 
-    @commands.command()
+    @commands.command(aliases=["użytkownik"])
     @has_permissions(manage_messages=True)
     async def user(self, ctx, user_ext_info: discord.Member):
         "Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"
