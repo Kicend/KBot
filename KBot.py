@@ -7,7 +7,6 @@ import time
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
-from random import randrange
 from itertools import cycle
 
 # Importowanie modułów z folderu data
@@ -28,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-13"
+wersja = "0.12-14"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -434,7 +433,7 @@ class Entertainment(commands.Cog):
         elif b == 3:
             await ctx.send("Widziałeś kiedyś kostkę 3 ścienną?")
         elif b >= 4:
-            await ctx.send("Kostka wypluwa {} szefuńciu".format(str(randrange(1, b))))
+            await ctx.send("Kostka wypluwa {} szefuńciu".format(str(random.randrange(1, b))))
 
     @commands.command(aliases=["moneta"])
     async def coin(self, ctx):
