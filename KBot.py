@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-3"
+wersja = "0.12-4"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -156,7 +156,18 @@ class Music(commands.Cog):
     async def current(self, ctx):
         """Wyświetl informacje o aktualnie granej pieśni"""
         if gra != []:
-            await ctx.send("Aktualnie gra {}".format(gra[0]))
+            dictMeta = ytdl.extract_info(gra[0], download=False)
+
+            embed = discord.Embed(
+                colour=discord.Colour.blue()
+            )
+
+            embed.set_author(name="Aktualnie gra")
+            embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
+            embed.add_field(name="URL:", value=gra[0], inline=False)
+            embed.add_field(name="Czas:", value=":{}".format(dictMeta['duration']), inline=False)
+
+            await ctx.send(embed=embed)
         else:
             await ctx.send("Nic nie gra, nie słychać?")
 
