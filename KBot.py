@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-8"
+wersja = "0.12-9"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -98,7 +98,7 @@ async def odtwarzacz(ctx):
 async def konwerter(czas):
     minuty = czas / 60
     sekundy = czas % 60
-    return "{}:{}".format(minuty, sekundy)
+    return "{}:{}".format(round(minuty, 0), sekundy)
 
 class Music(commands.Cog):
     def __init__(self, bot):
