@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-2"
+wersja = "0.12-3"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -449,17 +449,11 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send("Nie masz uprawnień do wykonania tej komendy")
-
-@bot.event
-async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Nie podałeś wymaganego argumentu")
-
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.BotMissingPermissions):
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send("Nie masz uprawnień do wykonania tej komendy")
+    elif isinstance(error, commands.BotMissingPermissions):
         await ctx.send("Nie mam uprawnień do wykonania tej komendy")
 
 bot.add_cog(Music(bot))
