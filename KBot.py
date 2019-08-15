@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-12"
+wersja = "0.12-13"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -83,10 +83,10 @@ async def odtwarzacz(ctx):
 
         await ctx.send('Teraz muzykuję: {}'.format(player.title))
         dictMeta = ytdl.extract_info(url, download=False)
-        a = dictMeta['duration']
+        duration = dictMeta['duration']
         if piosenki != []:
             del piosenki[0]
-        await asyncio.sleep(a)
+        await asyncio.sleep(duration)
         del gra[0]
         if gra == [] and kolejka == []:
             await ctx.send("Odtwarzacz kończy pracę")
