@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-6"
+wersja = "0.12-7"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -163,7 +163,6 @@ class Music(commands.Cog):
         if gra != []:
             dictMeta = ytdl.extract_info(gra[0], download=False)
             czas = dictMeta['duration']
-            czas_a = konwerter(czas)
 
             embed = discord.Embed(
                 colour=discord.Colour.blue()
@@ -172,7 +171,7 @@ class Music(commands.Cog):
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=gra[0], inline=False)
-            embed.add_field(name="Czas:", value="/{}".format(czas_a), inline=False)
+            embed.add_field(name="Czas:", value="/{}".format(str(konwerter(czas))), inline=False)
 
             await ctx.send(embed=embed)
         else:
