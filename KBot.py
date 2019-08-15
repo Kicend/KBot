@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-4"
+wersja = "0.12-5"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -95,6 +95,11 @@ async def odtwarzacz(ctx):
     await asyncio.sleep(30)
     await ctx.voice_client.disconnect()
 
+async def konwerter(czas):
+    minuty = czas / 60
+    sekundy = czas % 60
+    return "{}:{}".format(minuty, sekundy)
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -157,6 +162,7 @@ class Music(commands.Cog):
         """Wyświetl informacje o aktualnie granej pieśni"""
         if gra != []:
             dictMeta = ytdl.extract_info(gra[0], download=False)
+            czas = dictMeta['duration']
 
             embed = discord.Embed(
                 colour=discord.Colour.blue()
@@ -165,7 +171,7 @@ class Music(commands.Cog):
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=gra[0], inline=False)
-            embed.add_field(name="Czas:", value=":{}".format(dictMeta['duration']), inline=False)
+            embed.add_field(name="Czas:", value="/{}".format(konwerter(czas)), inline=False)
 
             await ctx.send(embed=embed)
         else:
