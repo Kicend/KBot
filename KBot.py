@@ -28,7 +28,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-11"
+wersja = "0.12-12"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -78,20 +78,19 @@ async def odtwarzacz(ctx):
     while True:
         gra.append(kolejka[0])
         url = kolejka.pop(0)
-        async with ctx.typing():
-            player = await YTDLSource.from_url(url, loop=False, stream=True)
-            ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
+        player = await YTDLSource.from_url(url, loop=False, stream=True)
+        ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
-            await ctx.send('Teraz muzykuję: {}'.format(player.title))
-            dictMeta = ytdl.extract_info(url, download=False)
-            a = dictMeta['duration']
-            if piosenki != []:
-                del piosenki[0]
-            await asyncio.sleep(a)
-            del gra[0]
-            if gra == [] and kolejka == []:
-                await ctx.send("Odtwarzacz kończy pracę")
-                break
+        await ctx.send('Teraz muzykuję: {}'.format(player.title))
+        dictMeta = ytdl.extract_info(url, download=False)
+        a = dictMeta['duration']
+        if piosenki != []:
+            del piosenki[0]
+        await asyncio.sleep(a)
+        del gra[0]
+        if gra == [] and kolejka == []:
+            await ctx.send("Odtwarzacz kończy pracę")
+            break
     await asyncio.sleep(30)
     await ctx.voice_client.disconnect()
 
