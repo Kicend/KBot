@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.13-3"
+wersja = "0.13-4"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -79,6 +79,7 @@ class Player():
 
     async def odtwarzacz(self, ctx):
         while True:
+            self.now = 0
             gra.append(kolejka[0])
             url = kolejka.pop(0)
             player = await YTDLSource.from_url(url, loop=False, stream=True)
