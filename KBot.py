@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.13-1"
+wersja = "0.13-2"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -74,6 +74,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 class Player():
+    def __init__(self):
+        self.now = 0
+
     async def odtwarzacz(self, ctx):
         while True:
             gra.append(kolejka[0])
@@ -84,6 +87,7 @@ class Player():
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
             dictMeta = ytdl.extract_info(url, download=False)
             duration = dictMeta['duration']
+            await Player.current_time(duration)
             if piosenki != []:
                 del piosenki[0]
             await asyncio.sleep(duration)
@@ -101,6 +105,11 @@ class Player():
             return "{}:{}".format(int(round(minuty - 0.5, 0)), sekundy)
         else:
             return "{}:0{}".format(int(round(minuty - 0.5, 0)), sekundy)
+
+    async def current_time(self, czas):
+        while self.now != czas:
+            self.now += 1
+            await asyncio.sleep(1)
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -174,7 +183,7 @@ class Music(commands.Cog):
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=gra[0], inline=False)
-            embed.add_field(name="Czas:", value="/{}".format(str(await self.muzyka.konwerter(czas))), inline=False)
+            embed.add_field(name="Czas:", value="{}/{}".format(str(await self.muzyka.konwerter(self.muzyka.now)), str(await self.muzyka.konwerter(czas))), inline=False)
 
             await ctx.send(embed=embed)
         else:
