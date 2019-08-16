@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-14"
+wersja = "0.12-15"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -445,7 +445,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(Config.commands_pre
 
 bot.remove_command("help")
 
-status = ["KBot {}".format(wersja), "!pomocy <1-3>"]
+status = ["KBot {}".format(wersja), "!pomocy <1-4>"]
 
 @bot.event
 async def on_connect():
