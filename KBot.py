@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.12-15"
+wersja = "0.13"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -73,34 +73,36 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
-async def odtwarzacz(ctx):
-    while True:
-        gra.append(kolejka[0])
-        url = kolejka.pop(0)
-        player = await YTDLSource.from_url(url, loop=False, stream=True)
-        ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
+class Player():
+    async def odtwarzacz(self, ctx):
+        while True:
+            gra.append(kolejka[0])
+            url = kolejka.pop(0)
+            player = await YTDLSource.from_url(url, loop=False, stream=True)
+            ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
-        await ctx.send('Teraz muzykuję: {}'.format(player.title))
-        dictMeta = ytdl.extract_info(url, download=False)
-        duration = dictMeta['duration']
-        if piosenki != []:
-            del piosenki[0]
-        await asyncio.sleep(duration)
-        del gra[0]
-        if gra == [] and kolejka == []:
-            await ctx.send("Odtwarzacz kończy pracę")
-            break
-    await asyncio.sleep(30)
-    await ctx.voice_client.disconnect()
+            await ctx.send('Teraz muzykuję: {}'.format(player.title))
+            dictMeta = ytdl.extract_info(url, download=False)
+            duration = dictMeta['duration']
+            if piosenki != []:
+                del piosenki[0]
+            await asyncio.sleep(duration)
+            del gra[0]
+            if gra == [] and kolejka == []:
+                await ctx.send("Odtwarzacz kończy pracę")
+                break
+        await asyncio.sleep(30)
+        await ctx.voice_client.disconnect()
 
-async def konwerter(czas):
-    minuty = czas / 60
-    sekundy = czas % 60
-    return "{}:{}".format(int(round(minuty - 0.5, 0)), sekundy)
+    async def konwerter(self, czas):
+        minuty = czas / 60
+        sekundy = czas % 60
+        return "{}:{}".format(int(round(minuty - 0.5, 0)), sekundy)
 
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.muzyka = Player()
 
     @commands.command(aliases=["wkrocz"])
     async def join(self, ctx, *, channel: discord.VoiceChannel):
@@ -116,7 +118,7 @@ class Music(commands.Cog):
         if gra == []:
             await ctx.send("Rozpoczynam odtwarzanie")
             kolejka.append(url)
-            await odtwarzacz(ctx)
+            await self.muzyka.odtwarzacz(ctx)
         else:
             if url in kolejka:
                 await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
@@ -134,7 +136,7 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
             await ctx.send("Pieśń została pominięta")
             del gra[0]
-            await odtwarzacz(ctx)
+            await self.muzyka.odtwarzacz(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
 
@@ -169,7 +171,7 @@ class Music(commands.Cog):
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=gra[0], inline=False)
-            embed.add_field(name="Czas:", value="/{}".format(str(await konwerter(czas))), inline=False)
+            embed.add_field(name="Czas:", value="/{}".format(str(await self.muzyka.konwerter(czas))), inline=False)
 
             await ctx.send(embed=embed)
         else:
