@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.13-4"
+wersja = "0.13-5"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -301,7 +301,7 @@ class Utilities(commands.Cog):
     @commands.command(aliases=["serwer"])
     async def guild(self, ctx):
         """Komenda do uzyskania informacji o serwerze"""
-        server = bot.get_guild(366266818077130753)
+        server = bot.get_guild(ctx.guild.id)
         roles = [role for role in server.roles]
         embed = discord.Embed(
             colour=discord.Colour.blue()
