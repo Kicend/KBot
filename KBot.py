@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.13-6"
+wersja = "0.14"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -76,6 +76,10 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Player():
     def __init__(self):
         self.now = 0
+
+    async def main(self, ctx):
+        self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
+        await self.task
 
     async def odtwarzacz(self, ctx):
         while True:
@@ -130,7 +134,7 @@ class Music(commands.Cog):
         if gra == []:
             await ctx.send("Rozpoczynam odtwarzanie")
             kolejka.append(url)
-            await self.muzyka.odtwarzacz(ctx)
+            asyncio.run(await self.muzyka.main(ctx))
         else:
             if url in kolejka:
                 await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
@@ -148,7 +152,8 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
             await ctx.send("Pieśń została pominięta")
             del gra[0]
-            await self.muzyka.odtwarzacz(ctx)
+            self.muzyka.task.cancel()
+            asyncio.run(await self.muzyka.main(ctx))
         else:
             await ctx.send("Brak pieśni w kolejce")
 
