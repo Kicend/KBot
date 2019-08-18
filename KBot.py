@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.14"
+wersja = "0.14-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -99,8 +99,11 @@ class Player():
             if gra == [] and kolejka == []:
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
-        await asyncio.sleep(30)
-        await ctx.voice_client.disconnect()
+        if gra != [] or kolejka != []:
+            return None
+        else:
+            await asyncio.sleep(30)
+            await ctx.voice_client.disconnect()
 
     async def konwerter(self, czas):
         minuty = czas / 60
