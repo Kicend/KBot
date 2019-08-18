@@ -27,7 +27,7 @@ gra = []
 users = []
 
 # Parametry bota
-wersja = "0.14-1"
+wersja = "0.14-3"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -488,10 +488,12 @@ async def on_ready():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Nie podałeś wymaganego argumentu")
-    elif isinstance(error, commands.MissingPermissions):
-        await ctx.send("Nie masz uprawnień do wykonania tej komendy")
-    elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.send("Nie mam uprawnień do wykonania tej komendy")
+    elif isinstance(error, commands.CommandInvokeError):
+        original = error.original
+        if isinstance(original, discord.Forbidden):
+            await ctx.send("Nie masz uprawnień do wykonania tej komendy lub Nie mam uprawnień do wykonania tej komendy")
+    elif isinstance(error, commands.CommandNotFound):
+        await ctx.send("Nie posiadam takiej komendy w swojej bazie danych")
 
 bot.add_cog(Music(bot))
 bot.add_cog(Utilities(bot))
