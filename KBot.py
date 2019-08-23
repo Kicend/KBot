@@ -522,7 +522,6 @@ async def on_ready():
         game = discord.Game(current_status)
         await bot.change_presence(status=discord.Status.online, activity=game)
         await asyncio.sleep(5)
-        print(server_players)
 
 @bot.event
 async def on_command_error(ctx, error):
