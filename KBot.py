@@ -25,7 +25,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.15"
+wersja = "0.15-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -106,6 +106,11 @@ class Player(object):
             return None
         else:
             await ctx.voice_client.disconnect()
+            await asyncio.sleep(30)
+            if self.gra != [] or self.kolejka !=[]:
+                return None
+            else:
+                del server_players[self.id]
 
     async def konwerter(self, czas):
         minuty = czas / 60
@@ -119,9 +124,6 @@ class Player(object):
         while self.now != czas:
             self.now += 1
             await asyncio.sleep(1)
-
-    def __del__(self):
-        del server_players[self.id]
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -253,6 +255,7 @@ class Music(commands.Cog):
             while server_players[server_id].piosenki != []:
                 del server_players[server_id].piosenki[0]
         del server_players[server_id].gra[0]
+        del server_players[server_id]
         await ctx.send("Pamięć podręczna została wyczyszczona")
 
     @commands.command(aliases=["czyść"])
@@ -519,6 +522,7 @@ async def on_ready():
         game = discord.Game(current_status)
         await bot.change_presence(status=discord.Status.online, activity=game)
         await asyncio.sleep(5)
+        print(server_players)
 
 @bot.event
 async def on_command_error(ctx, error):
