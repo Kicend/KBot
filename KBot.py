@@ -21,13 +21,11 @@ from data.user import user
 from settings.config import Config
 
 # Listy do przechowywania danych
-kolejka = []
-piosenki = []
-gra = []
+server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.14-4"
+wersja = "0.15"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -73,9 +71,13 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
-class Player():
-    def __init__(self):
+class Player(object):
+    def __init__(self, id):
         self.now = 0
+        self.id = id
+        self.kolejka = []
+        self.piosenki = []
+        self.gra = []
 
     async def main(self, ctx):
         self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
@@ -84,23 +86,23 @@ class Player():
     async def odtwarzacz(self, ctx):
         while True:
             self.now = 0
-            gra.append(kolejka[0])
-            url = kolejka.pop(0)
+            self.gra.append(self.kolejka[0])
+            url = self.kolejka.pop(0)
             player = await YTDLSource.from_url(url, loop=False, stream=True)
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
             dictMeta = ytdl.extract_info(url, download=False)
             duration = dictMeta['duration']
-            if piosenki != []:
-                del piosenki[0]
+            if self.piosenki != []:
+                del self.piosenki[0]
             await Player.current_time(self, duration)
-            del gra[0]
-            if gra == [] and kolejka == []:
+            del self.gra[0]
+            if self.gra == [] and self.kolejka == []:
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
         await asyncio.sleep(30)
-        if gra != [] or kolejka != []:
+        if self.gra != [] or self.kolejka != []:
             return None
         else:
             await ctx.voice_client.disconnect()
@@ -118,10 +120,12 @@ class Player():
             self.now += 1
             await asyncio.sleep(1)
 
+    def __del__(self):
+        del server_players[self.id]
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.muzyka = Player()
 
     @commands.command(aliases=["wkrocz"])
     async def join(self, ctx, *, channel: discord.VoiceChannel):
@@ -134,40 +138,56 @@ class Music(commands.Cog):
     @commands.command(aliases=["strumykuj"])
     async def play(self, ctx, *, url):
         """Strumykuj z interneta pieśni"""
-        if gra == []:
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        if server_players[server_id].gra == []:
             await ctx.send("Rozpoczynam odtwarzanie")
-            kolejka.append(url)
-            asyncio.run(await self.muzyka.main(ctx))
+            server_players[server_id].kolejka.append(url)
+            asyncio.run(await server_players[server_id].main(ctx))
         else:
-            if url in kolejka:
+            if url in server_players[server_id].kolejka:
                 await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
             else:
-                kolejka.append(url)
+                server_players[server_id].kolejka.append(url)
                 dictMeta = ytdl.extract_info(url, download=False)
                 title = dictMeta['title']
-                piosenki.append(title)
+                server_players[server_id].piosenki.append(title)
                 await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
     async def next(self, ctx):
         """Przewiń do kolejnej pieśni"""
-        if kolejka != []:
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        if server_players[server_id].kolejka != []:
             ctx.voice_client.stop()
             await ctx.send("Pieśń została pominięta")
-            del gra[0]
-            self.muzyka.task.cancel()
-            asyncio.run(await self.muzyka.main(ctx))
+            del server_players[server_id].gra[0]
+            server_players[server_id].task.cancel()
+            asyncio.run(await server_players[server_id].main(ctx))
         else:
             await ctx.send("Brak pieśni w kolejce")
 
     @commands.command(aliases=["pętla"])
     async def loop(self, ctx, switch):
         """Zapętlij pieśń"""
-        i = int(switch)
-        ctx.voice_client.stop()
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        i = 0
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        if server_players[server_id].gra == []:
+            await ctx.send("Co ty chcesz zapętlić?")
+        else:
+            i = int(switch)
+            ctx.voice_client.stop()
         if i == 1:
             await ctx.send("Pieśń została zapętlona")
-            url = gra[0]
+            url = server_players[server_id].gra[0]
         while i == 1:
             async with ctx.typing():
                 player = await YTDLSource.from_url(url, loop=False, stream=True)
@@ -180,8 +200,12 @@ class Music(commands.Cog):
     @commands.command(aliases=["teraz"])
     async def current(self, ctx):
         """Wyświetl informacje o aktualnie granej pieśni"""
-        if gra != []:
-            dictMeta = ytdl.extract_info(gra[0], download=False)
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        if server_players[server_id].gra != []:
+            dictMeta = ytdl.extract_info(server_players[server_id].gra[0], download=False)
             czas = dictMeta['duration']
 
             embed = discord.Embed(
@@ -190,8 +214,8 @@ class Music(commands.Cog):
 
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
-            embed.add_field(name="URL:", value=gra[0], inline=False)
-            embed.add_field(name="Czas:", value="{}/{}".format(str(await self.muzyka.konwerter(self.muzyka.now)), str(await self.muzyka.konwerter(czas))), inline=False)
+            embed.add_field(name="URL:", value=server_players[server_id].gra[0], inline=False)
+            embed.add_field(name="Czas:", value="{}/{}".format(str(await server_players[server_id].konwerter(server_players[server_id].now)), str(await server_players[server_id].konwerter(czas))), inline=False)
 
             await ctx.send(embed=embed)
         else:
@@ -217,37 +241,49 @@ class Music(commands.Cog):
     @commands.command(aliases=["wypad"])
     async def leave(self, ctx):
         """Zatrzymuje bota i rozłącza go z czatem głosowym"""
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
         await ctx.voice_client.disconnect()
-        if kolejka != []:
-            while kolejka != []:
-                del kolejka[0]
-        if piosenki != []:
-            while piosenki != []:
-                del piosenki[0]
-        del gra[0]
+        if server_players[server_id].kolejka != []:
+            while server_players[server_id].kolejka != []:
+                del server_players[server_id].kolejka[0]
+        if server_players[server_id].piosenki != []:
+            while server_players[server_id].piosenki != []:
+                del server_players[server_id].piosenki[0]
+        del server_players[server_id].gra[0]
         await ctx.send("Pamięć podręczna została wyczyszczona")
 
     @commands.command(aliases=["czyść"])
     async def delete_queue(self, ctx):
         """Wyczyść kolejkę z niepotrzebnych pieśni"""
-        while kolejka != []:
-            del kolejka[0]
-        while piosenki != []:
-            del piosenki[0]
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        while server_players[server_id].kolejka != []:
+            del server_players[server_id].kolejka[0]
+        while server_players[server_id].piosenki != []:
+            del server_players[server_id].piosenki[0]
         await ctx.send("Kolejka została wyczyszczona z pieśni")
 
     @commands.command(aliases=["kolejka"])
     async def queue(self, ctx):
         """Sprawdź zawartość kolejki"""
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
         embed = discord.Embed(
             colour=discord.Colour.blue()
         )
 
         embed.set_author(name="Kolejka bota KBot")
 
-        for liczba, piosenka in enumerate(piosenki):
+        for liczba, piosenka in enumerate(server_players[server_id].piosenki):
             embed.add_field(name="{} - {}".format(liczba+1, piosenka), value="Piosenka nr {}".format(liczba+1), inline=False)
-        if piosenki == []:
+        if server_players[server_id].piosenki == []:
             await ctx.send("Kolejka jest pusta")
         else:
             await ctx.send(embed=embed)
