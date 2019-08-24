@@ -25,7 +25,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.15-1"
+wersja = "0.15-2"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -142,21 +142,24 @@ class Music(commands.Cog):
         """Strumykuj z interneta pieśni"""
         server = bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in server_players:
-            server_players[server_id] = Player(server_id)
-        if server_players[server_id].gra == []:
-            await ctx.send("Rozpoczynam odtwarzanie")
-            server_players[server_id].kolejka.append(url)
-            asyncio.run(await server_players[server_id].main(ctx))
+        if not url.count("https"):
+            await ctx.send("Wyszukiwanie muzyki zostało tymczasowo wyłączone. Przyjmowane są tylko adresy URL!")
         else:
-            if url in server_players[server_id].kolejka:
-                await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
-            else:
+            if server_id not in server_players:
+                server_players[server_id] = Player(server_id)
+            if server_players[server_id].gra == []:
+                await ctx.send("Rozpoczynam odtwarzanie")
                 server_players[server_id].kolejka.append(url)
-                dictMeta = ytdl.extract_info(url, download=False)
-                title = dictMeta['title']
-                server_players[server_id].piosenki.append(title)
-                await ctx.send("Pieśń dodana do kolejki")
+                asyncio.run(await server_players[server_id].main(ctx))
+            else:
+                if url in server_players[server_id].kolejka:
+                    await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
+                else:
+                    server_players[server_id].kolejka.append(url)
+                    dictMeta = ytdl.extract_info(url, download=False)
+                    title = dictMeta['title']
+                    server_players[server_id].piosenki.append(title)
+                    await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
     async def next(self, ctx):
