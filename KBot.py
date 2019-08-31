@@ -21,7 +21,7 @@ from data.user import user
 from settings.config import Config
 
 # Importowanie polskich komunikatów błędów
-from data.lang.pl_PL import error_PL_db
+from data.lang.pl_PL import communicates_PL
 
 # Listy do przechowywania danych
 server_players = {}
@@ -543,7 +543,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandError):
         error_content = error.args[0]
         if error_content.count("Role") and error_content.count("required"):
-            error = error_PL_db.errors_PL.get(0)
+            error = communicates_PL.errors_PL.get(0)
         await ctx.send(error)
 
 bot.add_cog(Music(bot))
