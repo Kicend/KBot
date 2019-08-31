@@ -20,12 +20,15 @@ from data.user import user
 # Importowanie konfiguracji bota
 from settings.config import Config
 
+# Importowanie polskich komunikatów błędów
+from data.lang.pl_PL import error_PL_db
+
 # Listy do przechowywania danych
 server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.15-2"
+wersja = "0.16"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -162,6 +165,7 @@ class Music(commands.Cog):
                     await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
+    @commands.has_role("DJ")
     async def next(self, ctx):
         """Przewiń do kolejnej pieśni"""
         server = bot.get_guild(ctx.guild.id)
@@ -536,6 +540,11 @@ async def on_command_error(ctx, error):
             await ctx.send("Nie masz uprawnień do wykonania tej komendy lub Nie mam uprawnień do wykonania tej komendy")
     elif isinstance(error, commands.CommandNotFound):
         await ctx.send("Nie posiadam takiej komendy w swojej bazie danych")
+    elif isinstance(error, commands.CommandError):
+        error_content = error.args[0]
+        if error_content.count("Role") and error_content.count("required"):
+            error = error_PL_db.errors_PL.get(0)
+        await ctx.send(error)
 
 bot.add_cog(Music(bot))
 bot.add_cog(Utilities(bot))

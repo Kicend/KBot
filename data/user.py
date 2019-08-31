@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.12-x
+# Zgodne z KBot 0.16-x
 import discord
 
 async def user(self, ctx, user_ext_info: discord.Member):
