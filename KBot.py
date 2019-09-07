@@ -28,7 +28,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.16"
+wersja = "0.17"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -81,10 +81,16 @@ class Player(object):
         self.kolejka = []
         self.piosenki = []
         self.gra = []
+        self.voters_count = None
+        self.voters = []
+        self.vote_switch = 0
 
-    async def main(self, ctx):
-        self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
-        await self.task
+    async def main(self, ctx, switch):
+        task = asyncio.create_task(Player.odtwarzacz(self, ctx))
+        if switch == 0:
+            await task
+        else:
+            task.cancel()
 
     async def odtwarzacz(self, ctx):
         while True:
@@ -128,6 +134,29 @@ class Player(object):
             self.now += 1
             await asyncio.sleep(1)
 
+    async def vote_system(self, ctx):
+        if self.vote_switch == 0:
+            vc_members = discord.VoiceChannel = ctx.author.voice.channel
+            self.voters_count = len(vc_members.members)
+            self.voters.append(ctx.author)
+            await ctx.send("Zagłosowało 1/{}".format(self.voters_count))
+            self.vote_switch = 1
+        elif self.vote_switch == 1:
+            if ctx.author in self.voters:
+                await ctx.send("Już oddałeś głos!")
+            elif ctx.author not in self.voters:
+                self.voters.append(ctx.author)
+                await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count))
+                if len(self.voters) >= round(self.voters_count/2 - 0.5, 0):
+                    await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
+                    del self.gra[0]
+                    ctx.voice_client.stop()
+                    await Player.main(self, ctx, switch=1)
+                    asyncio.run(await Player.main(self, ctx, switch=0))
+                    while self.voters != []:
+                        del self.voters[0]
+                    self.vote_switch = 0
+
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -153,7 +182,7 @@ class Music(commands.Cog):
             if server_players[server_id].gra == []:
                 await ctx.send("Rozpoczynam odtwarzanie")
                 server_players[server_id].kolejka.append(url)
-                asyncio.run(await server_players[server_id].main(ctx))
+                asyncio.run(await server_players[server_id].main(ctx, switch=0))
             else:
                 if url in server_players[server_id].kolejka:
                     await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
@@ -165,7 +194,6 @@ class Music(commands.Cog):
                     await ctx.send("Pieśń dodana do kolejki")
 
     @commands.command(aliases=["następna"])
-    @commands.has_role("DJ")
     async def next(self, ctx):
         """Przewiń do kolejnej pieśni"""
         server = bot.get_guild(ctx.guild.id)
@@ -173,11 +201,7 @@ class Music(commands.Cog):
         if server_id not in server_players:
             server_players[server_id] = Player(server_id)
         if server_players[server_id].kolejka != []:
-            ctx.voice_client.stop()
-            await ctx.send("Pieśń została pominięta")
-            del server_players[server_id].gra[0]
-            server_players[server_id].task.cancel()
-            asyncio.run(await server_players[server_id].main(ctx))
+            await server_players[server_id].vote_system(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
 
