@@ -204,10 +204,7 @@ class Music(commands.Cog):
         if server_id not in server_players:
             server_players[server_id] = Player(server_id)
         if server_players[server_id].kolejka != []:
-            if ctx.author.voice.channel is not None:
-                await server_players[server_id].vote_system(ctx)
-            else:
-                await ctx.send("Nie jesteś połączony z kanałem głosowym, na którym jest bot")
+            await server_players[server_id].vote_system(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
 
