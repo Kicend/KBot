@@ -149,7 +149,7 @@ class Player(object):
                 await ctx.send("Już oddałeś głos!")
             elif ctx.author not in self.voters:
                 self.voters.append(ctx.author)
-                await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count))
+                await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count - 1))
                 if len(self.voters) >= round(self.voters_count/2 - 0.5, 0):
                     await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
                     del self.gra[0]
