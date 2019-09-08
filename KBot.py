@@ -142,7 +142,7 @@ class Player(object):
             vc_members = discord.VoiceChannel = ctx.author.voice.channel
             self.voters_count = len(vc_members.members)
             self.voters.append(ctx.author)
-            await ctx.send("Zagłosowało 1/{}".format(self.voters_count))
+            await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
             self.vote_switch = 1
         elif self.vote_switch == 1:
             if ctx.author in self.voters:
