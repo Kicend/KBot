@@ -31,7 +31,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17-3"
+wersja = "0.17-4"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -204,7 +204,7 @@ class Music(commands.Cog):
         if server_id not in server_players:
             server_players[server_id] = Player(server_id)
         if server_players[server_id].kolejka != []:
-            if ctx.author.voice.channel == ctx.voice_client:
+            if ctx.author.voice.channel is not None:
                 await server_players[server_id].vote_system(ctx)
             else:
                 await ctx.send("Nie jesteś połączony z kanałem głosowym, na którym jest bot")
