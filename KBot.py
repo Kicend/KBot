@@ -31,7 +31,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17-4"
+wersja = "0.17-5"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -155,10 +155,10 @@ class Player(object):
                     del self.gra[0]
                     ctx.voice_client.stop()
                     self.task.cancel()
-                    asyncio.run(await Player.main(self, ctx))
                     while self.voters != []:
                         del self.voters[0]
                     self.vote_switch = 0
+                    asyncio.run(await Player.main(self, ctx))
 
 class Music(commands.Cog):
     def __init__(self, bot):
