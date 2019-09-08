@@ -28,7 +28,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17"
+wersja = "0.17-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -85,12 +85,9 @@ class Player(object):
         self.voters = []
         self.vote_switch = 0
 
-    async def main(self, ctx, switch):
-        task = asyncio.create_task(Player.odtwarzacz(self, ctx))
-        if switch == 0:
-            await task
-        else:
-            task.cancel()
+    async def main(self, ctx):
+        self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
+        await self.task
 
     async def odtwarzacz(self, ctx):
         while True:
@@ -151,8 +148,8 @@ class Player(object):
                     await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
                     del self.gra[0]
                     ctx.voice_client.stop()
-                    await Player.main(self, ctx, switch=1)
-                    asyncio.run(await Player.main(self, ctx, switch=0))
+                    self.task.cancel()
+                    asyncio.run(await Player.main(self, ctx))
                     while self.voters != []:
                         del self.voters[0]
                     self.vote_switch = 0
@@ -182,7 +179,7 @@ class Music(commands.Cog):
             if server_players[server_id].gra == []:
                 await ctx.send("Rozpoczynam odtwarzanie")
                 server_players[server_id].kolejka.append(url)
-                asyncio.run(await server_players[server_id].main(ctx, switch=0))
+                asyncio.run(await server_players[server_id].main(ctx))
             else:
                 if url in server_players[server_id].kolejka:
                     await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
