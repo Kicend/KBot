@@ -23,12 +23,15 @@ from settings.config import Config
 # Importowanie polskich komunikatów błędów
 from data.lang.pl_PL import communicates_PL
 
+# Importowanie listy emoji
+from data.reactions import reactions_db
+
 # Listy do przechowywania danych
 server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17-1"
+wersja = "0.17-2"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
