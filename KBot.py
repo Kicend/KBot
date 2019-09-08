@@ -31,7 +31,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17-2"
+wersja = "0.17-3"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -107,6 +107,9 @@ class Player(object):
                 del self.piosenki[0]
             await Player.current_time(self, duration)
             del self.gra[0]
+            if self.vote_switch == 1:
+                self.vote_switch = 0
+                await ctx.send("{}".format(communicates_PL.communicates.get(0)))
             if self.gra == [] and self.kolejka == []:
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
