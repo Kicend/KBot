@@ -31,7 +31,7 @@ server_players = {}
 users = []
 
 # Parametry bota
-wersja = "0.17-5"
+wersja = "0.17-6"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 

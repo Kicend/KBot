@@ -33,7 +33,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!autor", value="Wpiszta by się dowiedzieć więcej o Stwórcy tego dzieła", inline=False)
         embed.add_field(name="!info_bot", value="Informacje o mnie", inline=False)
         embed.add_field(name="!serwer", value="Informacje o serwerze", inline=False)
-        embed.add_field(name="!użytkownik <nick, @nick lub id", value="Informacje o danym użytkowniku", inline=False)
+        embed.add_field(name="!użytkownik <nick, @nick lub id>", value="Informacje o danym użytkowniku", inline=False)
 
         await ctx.send(embed=embed)
 
