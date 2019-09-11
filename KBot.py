@@ -28,10 +28,10 @@ from data.reactions import reactions_db
 
 # Listy do przechowywania danych
 server_players = {}
-users = []
+server_banlist = {}
 
 # Parametry bota
-wersja = "0.17-6"
+wersja = "0.17-8"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -159,6 +159,33 @@ class Player(object):
                         del self.voters[0]
                     self.vote_switch = 0
                     asyncio.run(await Player.main(self, ctx))
+
+class Banlist(object):
+    def __init__(self, id):
+        self.ban_users = []
+        self.id = id
+
+    async def banlist_display(self, ctx):
+        banned_users = await ctx.guild.bans()
+
+        for ban_entry in banned_users:
+            user = ban_entry.user
+            if user not in self.ban_users:
+                self.ban_users.append(user)
+
+        embed = discord.Embed(
+            colour=discord.Colour.blue()
+        )
+
+        embed.set_author(name="Lista skazanych")
+
+        if self.ban_users != []:
+            for liczba, user in enumerate(self.ban_users):
+                liczba = liczba + 1
+                embed.add_field(name="Skazany nr {}".format(liczba), value=user, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("Lista skazanych jest pusta")
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -450,28 +477,12 @@ class Administration(commands.Cog):
     @has_permissions(manage_guild=True)
     async def banlist(self, ctx):
         """Lista skazańców"""
-        banned_users = await ctx.guild.bans()
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_banlist:
+            server_banlist[server_id] = Banlist(server_id)
 
-        for ban_entry in banned_users:
-            user = ban_entry.user
-            if user in users:
-                print(None)
-            else:
-                users.append(user)
-
-        embed = discord.Embed(
-            colour=discord.Colour.blue()
-        )
-
-        embed.set_author(name="Lista skazanych")
-
-        if users != []:
-            for liczba, user in enumerate(users):
-                liczba = liczba + 1
-                embed.add_field(name="Skazany nr {}".format(liczba), value=user, inline=False)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("Lista skazanych jest pusta")
+        await server_banlist[server_id].banlist_display(ctx)
 
     @commands.command()
     @has_permissions(manage_messages=True)
