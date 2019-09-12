@@ -31,7 +31,7 @@ server_players = {}
 server_banlist = {}
 
 # Parametry bota
-wersja = "0.17-8"
+wersja = "0.18"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -87,6 +87,7 @@ class Player(object):
         self.voters_count = None
         self.voters = []
         self.vote_switch = 0
+        self.is_paused = 0
 
     async def main(self, ctx):
         self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
@@ -124,6 +125,15 @@ class Player(object):
             else:
                 del server_players[self.id]
 
+    async def pause(self, ctx):
+        self.is_paused = 1
+        self.save_time = self.now
+        ctx.voice_client.pause()
+
+    async def resume(self, ctx):
+        self.is_paused = 0
+        ctx.voice_client.resume()
+
     async def konwerter(self, czas):
         minuty = czas / 60
         sekundy = czas % 60
@@ -136,6 +146,8 @@ class Player(object):
         while self.now != czas:
             self.now += 1
             await asyncio.sleep(1)
+            if self.is_paused == 1:
+                self.now = self.save_time
 
     async def vote_system(self, ctx):
         if self.vote_switch == 0:
@@ -284,10 +296,23 @@ class Music(commands.Cog):
         else:
             await ctx.send("Nic nie gra, nie słychać?")
 
-    @commands.command(aliases=["stopuj"])
-    async def stop(self, ctx):
-        """Stopuje aktualnie graną pieśń"""
-        ctx.voice_client.stop()
+    @commands.command(aliases=["pauzuj"])
+    async def pause(self, ctx):
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        await server_players[server_id].pause(ctx)
+        await ctx.send("Pieśń została zapauzowana")
+
+    @commands.command(aliases=["wznów"])
+    async def resume(self, ctx):
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_players:
+            server_players[server_id] = Player(server_id)
+        await server_players[server_id].resume(ctx)
+        await ctx.send("Pieśń została wznowiona")
 
     @commands.command(aliases=["harmider"])
     async def volume(self, ctx, volume: int):
