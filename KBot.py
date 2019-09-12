@@ -143,7 +143,7 @@ class Player(object):
             return "{}:0{}".format(int(round(minuty - 0.5, 0)), sekundy)
 
     async def current_time(self, czas):
-        while self.now != czas:
+        while self.now <= czas:
             self.now += 1
             await asyncio.sleep(1)
             if self.is_paused == 1:
