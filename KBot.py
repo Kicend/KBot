@@ -31,7 +31,7 @@ server_players = {}
 server_banlist = {}
 
 # Parametry bota
-wersja = "0.18"
+wersja = "0.18-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -298,6 +298,7 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["pauzuj"])
     async def pause(self, ctx):
+        """Pauzuje graną pieśń"""
         server = bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in server_players:
@@ -307,6 +308,7 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["wznów"])
     async def resume(self, ctx):
+        """Wznawia wstrzymaną pieśń"""
         server = bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in server_players:

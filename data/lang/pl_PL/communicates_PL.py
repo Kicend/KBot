@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.17-x
+# Zgodne z KBot 0.18-x
 errors_PL = {0: "Nie posiadasz wymaganej roli do wykonania tej komendy!",
              1: "Błąd bota: %s"}
 
@@ -42,4 +42,6 @@ communicates = {0: "Głosowanie zakończone niepomyślnie: Pieśń dobiegła ko�
                 37: "Kostka wypluwa {} szefuńciu",
                 38: "Nie podałeś wymaganego argumentu",
                 39: "Nie masz uprawnień do wykonania tej komendy lub Nie mam uprawnień do wykonania tej komendy",
-                40: "Nie posiadam takiej komendy w swojej bazie danych"}
+                40: "Nie posiadam takiej komendy w swojej bazie danych",
+                41: "Pieśń została zapauzowana",
+                42: "Pieśń została wznowiona"}

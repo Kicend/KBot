@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.17-x
+# Zgodne z KBot 0.18-x
 import discord
 
 async def pomocy(self, ctx, los, wersja):
@@ -17,10 +17,11 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!kolejka", value="Sprawdź zawartość kolejki", inline=False)
         embed.add_field(name="!czyść", value="Wyczyść kolejkę z niepotrzebnych pieśni", inline=False)
         embed.add_field(name="!harmider <wartość (od 0 do 150)>", value="Zmienia głośnośc bota", inline=False)
-        embed.add_field(name="!stopuj", value="Stopuje aktualnie graną pieśń", inline=False)
+        embed.add_field(name="!pauzuj", value="Pauzuje graną pieśń", inline=False)
+        embed.add_field(name="!wznów", value="Wznawia wstrzymaną pieśń", inline=False)
         embed.add_field(name="!wypad", value="Zatrzymuje bota i rozłącza go z czatem głosowym", inline=False)
 
-        await ctx.send(embed=embed)  # Jeżeli wstawiony author to await ctx.send(author, embed=embed)
+        await ctx.send(embed=embed)
 
     elif decyzja == 2:
         embed = discord.Embed(

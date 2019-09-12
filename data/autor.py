@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.17-x
+# Zgodne z KBot 0.18-x
 import discord
 
 async def autor(self, ctx):
@@ -15,7 +15,7 @@ async def autor(self, ctx):
                     value="Jestem zwykłym chłopakiem siedzącym przed kompem i se postanowiłem napisać to, to tyle",
                     inline=False)
     embed.add_field(name="Technologia",
-                    value="Dziękuję za stworzenie Discord.py wersja 1.1.0a \n""https://github.com/Rapptz/discord.py",
+                    value="Dziękuję za stworzenie Discord.py wersja 1.2.3 \n""https://github.com/Rapptz/discord.py",
                     inline=False)
     embed.add_field(name="Technologia cd.",
                     value="Dziękuję również za stworzenie youtube_dl \n""https://github.com/ytdl-org/youtube-dl",
