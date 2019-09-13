@@ -31,7 +31,7 @@ server_players = {}
 server_tools = {}
 
 # Parametry bota
-wersja = "0.19"
+wersja = "0.19-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -198,6 +198,19 @@ class Tools(object):
             await ctx.send(embed=embed)
         else:
             await ctx.send("Lista skazanych jest pusta")
+
+    async def banlist_refresh(self, ctx):
+        banned_users = await ctx.guild.bans()
+
+        for ban_entry in banned_users:
+            user = ban_entry.user
+            if user not in self.ban_users:
+                self.ban_users.append(user)
+
+    async def ban(self, ctx, member: discord.Member, reason):
+        await member.ban(reason=reason)
+        await ctx.send("Użyszkodnik został skazany na tułaczkę\nPowód: {}".format(reason))
+        await Tools.banlist_refresh(self, ctx)
 
     async def unban(self, ctx, members):
         banned_users = await ctx.guild.bans()
@@ -507,8 +520,12 @@ class Administration(commands.Cog):
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason="Brak"):
         """Ukarz delikwenta na tułaczkę"""
-        await member.ban(reason=reason)
-        await ctx.send("Użyszkodnik został skazany na tułaczkę\nPowód: {}".format(reason))
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_tools:
+            server_tools[server_id] = Tools(server_id)
+
+        await server_tools[server_id].ban(ctx, member, reason)
 
     @commands.command(aliases=["wybacz"])
     @has_permissions(ban_members=True)
@@ -534,13 +551,20 @@ class Administration(commands.Cog):
 
     @commands.command()
     @has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount: int, member: discord.Member = None):
+    async def clear(self, ctx, amount, member: discord.Member = None):
         "Komenda do czyszczenia historii czatu"
-        deleted = await ctx.channel.purge(limit=amount, check=member)
-        if len(deleted) == 1:
-            await ctx.send("Usunięto {} wiadomość".format(len(deleted)))
+        if amount.isdigit():
+            int(amount)
+            deleted = await ctx.channel.purge(limit=amount, check=member)
+            if len(deleted) == 1:
+                await ctx.send("Usunięto {} wiadomość".format(len(deleted)))
+            else:
+                await ctx.send("Usunięto {} wiadomości".format(len(deleted)))
+        elif amount == "all":
+            await ctx.channel.purge(check=member)
+            await ctx.send("Usunięto wszystkie wiadomości")
         else:
-            await ctx.send("Usunięto {} wiadomości".format(len(deleted)))
+            await ctx.send("Nieprawidłowa wartość argumentu")
 
 class Entertainment(commands.Cog):
     def __init__(self, bot):
