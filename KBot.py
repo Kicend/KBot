@@ -215,14 +215,12 @@ class Tools(object):
                 if (user.name, user.discriminator) == (member_name, member_discriminator):
                     await ctx.guild.unban(user)
                     await ctx.send("{} został odbanowany".format(user.mention))
-                    return
             else:
                 try:
                     member_number = int(member)
                     member = self.ban_users.pop(member_number - 1)
                     await ctx.guild.unban(member)
-                    await ctx.send("{} został odbanowany".format(user.mention))
-                    return
+                    await ctx.send("{} został odbanowany".format(member.mention))
                 except IndexError:
                     await ctx.send("Nie ma tylu skazańców!")
 
