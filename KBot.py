@@ -28,10 +28,10 @@ from data.reactions import reactions_db
 
 # Listy do przechowywania danych
 server_players = {}
-server_banlist = {}
+server_tools = {}
 
 # Parametry bota
-wersja = "0.18-1"
+wersja = "0.19"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -172,7 +172,7 @@ class Player(object):
                     self.vote_switch = 0
                     asyncio.run(await Player.main(self, ctx))
 
-class Banlist(object):
+class Tools(object):
     def __init__(self, id):
         self.ban_users = []
         self.id = id
@@ -198,6 +198,33 @@ class Banlist(object):
             await ctx.send(embed=embed)
         else:
             await ctx.send("Lista skazanych jest pusta")
+
+    async def unban(self, ctx, members):
+        banned_users = await ctx.guild.bans()
+        if members.count(","):
+            await ctx.send("Nie używaj przecinków przy wymienianiu. Wystarczą spacje!")
+            return
+
+        members_list = members.split()
+
+        for ban_entry in banned_users:
+            user = ban_entry.user
+            member = members_list.pop(0)
+            if member.count("#"):
+                member_name, member_discriminator = member.split("#")
+                if (user.name, user.discriminator) == (member_name, member_discriminator):
+                    await ctx.guild.unban(user)
+                    await ctx.send("{} został odbanowany".format(user.mention))
+                    return
+            else:
+                try:
+                    member_number = int(member)
+                    member = self.ban_users.pop(member_number - 1)
+                    await ctx.guild.unban(member)
+                    await ctx.send("{} został odbanowany".format(user.mention))
+                    return
+                except IndexError:
+                    await ctx.send("Nie ma tylu skazańców!")
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -487,18 +514,14 @@ class Administration(commands.Cog):
 
     @commands.command(aliases=["wybacz"])
     @has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member):
+    async def unban(self, ctx, *, members):
         """Wybacz mu"""
-        banned_users = await ctx.guild.bans()
-        member_name, member_discriminator = member.split("#")
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_tools:
+            server_tools[server_id] = Tools(server_id)
 
-        for ban_entry in banned_users:
-            user = ban_entry.user
-
-            if (user.name, user.discriminator) == (member_name, member_discriminator):
-                await ctx.guild.unban(user)
-                await ctx.send("{} został odbanowany".format(user.mention))
-                return
+        await server_tools[server_id].unban(ctx, members)
 
     @commands.command(aliases=["skazańcy"])
     @has_permissions(manage_guild=True)
@@ -506,10 +529,10 @@ class Administration(commands.Cog):
         """Lista skazańców"""
         server = bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in server_banlist:
-            server_banlist[server_id] = Banlist(server_id)
+        if server_id not in server_tools:
+            server_tools[server_id] = Tools(server_id)
 
-        await server_banlist[server_id].banlist_display(ctx)
+        await server_tools[server_id].banlist_display(ctx)
 
     @commands.command()
     @has_permissions(manage_messages=True)
