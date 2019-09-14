@@ -24,6 +24,7 @@ from data.settings.config import Config
 from data.lang.pl_PL import communicates_PL
 
 # Importowanie listy emoji
+from data.reactions import reactions_db
 
 # Listy do przechowywania danych
 server_players = {}
