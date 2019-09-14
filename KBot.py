@@ -10,28 +10,27 @@ import random
 from itertools import cycle
 
 # Importowanie modułów z folderu data
-from data.zapytaj import answers
-from data.autor import autor
-from data.pomocy import pomocy
-from data.pkn import rsp
-from data.coin import coin
-from data.user import user
+from data.modules.Utilities.user import user
+from data.modules.Utilities.autor import autor
+from data.modules.Utilities.pomocy import pomocy
+from data.modules.Entertainment.pkn import rsp
+from data.modules.Entertainment.coin import coin
+from data.modules.Entertainment.zapytaj import answers
 
 # Importowanie konfiguracji bota
-from settings.config import Config
+from data.settings.config import Config
 
 # Importowanie polskich komunikatów błędów
 from data.lang.pl_PL import communicates_PL
 
 # Importowanie listy emoji
-from data.reactions import reactions_db
 
 # Listy do przechowywania danych
 server_players = {}
 server_tools = {}
 
 # Parametry bota
-wersja = "0.19-3"
+wersja = "0.19-4"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
