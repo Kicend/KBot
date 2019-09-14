@@ -31,7 +31,7 @@ server_players = {}
 server_tools = {}
 
 # Parametry bota
-wersja = "0.19-4"
+wersja = "0.19-5"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -142,7 +142,7 @@ class Player(object):
         else:
             return "{}:0{}".format(int(round(minuty - 0.5, 0)), sekundy)
 
-    async def current_time(self, czas):
+    async def current_time(self, czas: int):
         while self.now <= czas:
             self.now += 1
             await asyncio.sleep(1)
@@ -154,8 +154,17 @@ class Player(object):
             vc_members = discord.VoiceChannel = ctx.author.voice.channel
             self.voters_count = len(vc_members.members)
             self.voters.append(ctx.author)
-            await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
-            self.vote_switch = 1
+            if self.voters_count - 1 == 1:
+                await ctx.send("Pieśń została pominięta!")
+                del self.gra[0]
+                ctx.voice_client.stop()
+                self.task.cancel()
+                while self.voters != []:
+                    del self.voters[0]
+                asyncio.run(await Player.main(self, ctx))
+            else:
+                await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
+                self.vote_switch = 1
         elif self.vote_switch == 1:
             if ctx.author in self.voters:
                 await ctx.send("Już oddałeś głos!")
