@@ -31,7 +31,7 @@ server_players = {}
 server_tools = {}
 
 # Parametry bota
-wersja = "0.19-2"
+wersja = "0.19-3"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -384,7 +384,7 @@ class Music(commands.Cog):
         del server_players[server_id]
         await ctx.send("Pamięć podręczna została wyczyszczona")
 
-    @commands.command(aliases=["czyść"])
+    @commands.command(aliases=["czyść_kolejke"])
     async def delete_queue(self, ctx):
         """Wyczyść kolejkę z niepotrzebnych pieśni"""
         server = bot.get_guild(ctx.guild.id)
@@ -561,9 +561,10 @@ class Administration(commands.Cog):
 
     @commands.command(aliases=["dodaj_role"])
     @has_permissions(manage_roles=True)
-    async def add_role(self, ctx, member: discord.Member, rola: str):
-        """Dawanie roli użytkownikowi"""
-        role = discord.utils.get(ctx.guild.roles, name=rola)
+    async def add_role(self, ctx, member: discord.Member, rola: discord.Role):
+        """Obdaruj użytkownika rolą"""
+        role_name = rola.name
+        role = discord.utils.get(ctx.guild.roles, name=role_name)
         await member.add_roles(role)
 
 class Entertainment(commands.Cog):

@@ -15,7 +15,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!pętla <0 lub 1>", value="Zapętlij pieśń", inline=False)
         embed.add_field(name="!info", value="Wyświetl informacje o aktualnie granej pieśni", inline=False)
         embed.add_field(name="!kolejka", value="Sprawdź zawartość kolejki", inline=False)
-        embed.add_field(name="!czyść", value="Wyczyść kolejkę z niepotrzebnych pieśni", inline=False)
+        embed.add_field(name="!czyść_kolejke", value="Wyczyść kolejkę z niepotrzebnych pieśni", inline=False)
         embed.add_field(name="!harmider <wartość (od 0 do 150)>", value="Zmienia głośnośc bota", inline=False)
         embed.add_field(name="!pauzuj", value="Pauzuje graną pieśń", inline=False)
         embed.add_field(name="!wznów", value="Wznawia wstrzymaną pieśń", inline=False)
@@ -48,7 +48,8 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!ukarz", value="Ukarz delikwenta na tułaczkę", inline=False)
         embed.add_field(name="!wybacz", value="Wybacz mu", inline=False)
         embed.add_field(name="!skazańcy", value="Lista skazańców", inline=False)
-        embed.add_field(name="!clear <liczba>", value="Służba sprzątania czatu", inline=False)
+        embed.add_field(name="!czyść <liczba>", value="Służba sprzątania czatu", inline=False)
+        embed.add_field(name="!dodaj_role <użytkownik> <rola>", value="Obdaruj użytkownika rolą", inline=False)
 
         await ctx.send(embed=embed)
 
