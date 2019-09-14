@@ -31,7 +31,7 @@ server_players = {}
 server_tools = {}
 
 # Parametry bota
-wersja = "0.19-1"
+wersja = "0.19-2"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -417,13 +417,6 @@ class Music(commands.Cog):
         else:
             await ctx.send(embed=embed)
 
-    #@commands.command()
-    #async def konfiguruj(self, ctx, nazwa: str):
-        #"""Zaawansowana konfiguracja bota (niezalecane dla początkujących)"""
-        #role = discord.utils.get(ctx.guild.roles, name=nazwa)
-        #user = ctx.message.author
-        #await user.add_roles(role) Przyznawanie roli za pomocą komendy
-
     @play.before_invoke
     async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
@@ -502,7 +495,7 @@ class Utilities(commands.Cog):
     @commands.command(aliases=["użytkownik"])
     @has_permissions(manage_messages=True)
     async def user(self, ctx, user_ext_info: discord.Member):
-        "Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"
+        """Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"""
         await user(self, ctx, user_ext_info)
 
 class Administration(commands.Cog):
@@ -552,7 +545,7 @@ class Administration(commands.Cog):
     @commands.command()
     @has_permissions(manage_messages=True)
     async def clear(self, ctx, amount, member: discord.Member = None):
-        "Komenda do czyszczenia historii czatu"
+        """Komenda do czyszczenia historii czatu"""
         if amount.isdigit():
             int(amount)
             deleted = await ctx.channel.purge(limit=amount, check=member)
@@ -565,6 +558,13 @@ class Administration(commands.Cog):
             await ctx.send("Usunięto wszystkie wiadomości")
         else:
             await ctx.send("Nieprawidłowa wartość argumentu")
+
+    @commands.command(aliases=["dodaj_role"])
+    @has_permissions(manage_roles=True)
+    async def add_role(self, ctx, member: discord.Member, rola: str):
+        """Dawanie roli użytkownikowi"""
+        role = discord.utils.get(ctx.guild.roles, name=rola)
+        await member.add_roles(role)
 
 class Entertainment(commands.Cog):
     def __init__(self, bot):
@@ -615,7 +615,7 @@ class Entertainment(commands.Cog):
 
     @commands.command(aliases=["moneta"])
     async def coin(self, ctx):
-        "Rzuć monetą"
+        """Rzuć monetą"""
         await coin(self, ctx)
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(Config.commands_prefix),
