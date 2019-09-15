@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.19-x
+# Zgodne z KBot 0.20-x
 answers = ["Brzmi spoko",
            "Nie wiem, nie kontroluję tego",
            "Superaśno przaśno mi",

@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.19-x
+# Zgodne z KBot 0.20-x
 import discord
 import random
 
