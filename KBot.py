@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions
 import random
 from itertools import cycle
+import json
 
 # Importowanie modułów z folderu data
 from data.modules.Utilities.user import user
@@ -18,20 +19,21 @@ from data.modules.Entertainment.coin import coin
 from data.modules.Entertainment.zapytaj import answers
 
 # Importowanie konfiguracji bota
-from data.settings.config import Config
+from data.settings.bot_basic_parameters.config import Config
 
 # Importowanie polskich komunikatów błędów
 from data.lang.pl_PL import communicates_PL
 
 # Importowanie listy emoji
-from data.reactions import reactions_db
+# from data.reactions import reactions_db
 
 # Listy do przechowywania danych
 server_players = {}
 server_tools = {}
+server_parameters = {}
 
 # Parametry bota
-wersja = "0.19-5"
+wersja = "0.20"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -245,6 +247,20 @@ class Tools(object):
                     await ctx.send("{} został odbanowany".format(member.mention))
                 except IndexError:
                     await ctx.send("Nie ma tylu skazańców!")
+
+class GuildParameters(object):
+    def __init__(self, id):
+        self.id = id
+        self.server_settings = open("data/settings/servers_settings/{}.json".format(self.id), "a+")
+        self.server_settings.close()
+
+    async def join_guild(self):
+        basic_parameters = {"prefix": "!"}
+        filename = "data/settings/servers_settings/{}.json".format(self.id)
+        if not os.path.isfile(filename):
+            with open(filename, "a+") as f:
+                json.dump(basic_parameters, f, indent=4)
+                f.close()
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -649,6 +665,14 @@ async def on_ready():
         game = discord.Game(current_status)
         await bot.change_presence(status=discord.Status.online, activity=game)
         await asyncio.sleep(5)
+
+@bot.event
+async def on_guild_join(guild):
+    server_id = guild.id
+    if server_id not in server_parameters:
+        server_parameters[server_id] = GuildParameters(server_id)
+
+    await server_parameters[server_id].join_guild()
 
 @bot.event
 async def on_command_error(ctx, error):
