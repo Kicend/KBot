@@ -33,7 +33,7 @@ server_tools = {}
 server_parameters = {}
 
 # Parametry bota
-wersja = "0.20"
+wersja = "0.20-1"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -112,6 +112,8 @@ class Player(object):
             del self.gra[0]
             if self.vote_switch == 1:
                 self.vote_switch = 0
+                while self.voters != []:
+                    del self.voters[0]
                 await ctx.send("{}".format(communicates_PL.communicates.get(0)))
             if self.gra == [] and self.kolejka == []:
                 await ctx.send("Odtwarzacz kończy pracę")
@@ -251,16 +253,39 @@ class Tools(object):
 class GuildParameters(object):
     def __init__(self, id):
         self.id = id
-        self.server_settings = open("data/settings/servers_settings/{}.json".format(self.id), "a+")
-        self.server_settings.close()
+        self.prefix = None
 
     async def join_guild(self):
-        basic_parameters = {"prefix": "!"}
+        guild_parameters = {"prefix": "!"}
         filename = "data/settings/servers_settings/{}.json".format(self.id)
         if not os.path.isfile(filename):
             with open(filename, "a+") as f:
-                json.dump(basic_parameters, f, indent=4)
+                json.dump(guild_parameters, f, indent=4)
                 f.close()
+
+    async def leave_guild(self):
+        filename = "data/settings/servers_settings/{}.json".format(self.id)
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+    async def change_prefix(self, ctx, prefix: str):
+        filename = "data/settings/servers_settings/{}.json".format(self.id)
+        if os.path.isfile(filename):
+            with open(filename, "r") as f:
+                guild_parameters = json.load(f)
+                guild_parameters["prefix"] = prefix
+                json.dump(guild_parameters, f, indent=4)
+                f.close()
+                await ctx.send("Prefix został pomyślnie zmieniony")
+
+    async def get_prefix(self):
+        filename = "data/settings/servers_settings/{}.json".format(self.id)
+        if os.path.isfile(filename):
+            with open(filename, "r") as f:
+                guild_parameters = json.load(f)
+                self.prefix = guild_parameters["prefix"]
+                f.close()
+                return self.prefix
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -592,6 +617,16 @@ class Administration(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name=role_name)
         await member.add_roles(role)
 
+    @commands.command(aliases=["zmiana_prefixu"])
+    @has_permissions(administrator=True)
+    async def change_prefix(self, ctx, prefix: str):
+        server = bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in server_parameters:
+            server_parameters[server_id] = GuildParameters(server_id)
+
+        await server_parameters[server_id].change_prefix(ctx, prefix)
+
 class Entertainment(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -643,6 +678,17 @@ class Entertainment(commands.Cog):
     async def coin(self, ctx):
         """Rzuć monetą"""
         await coin(self, ctx)
+
+async def get_prefix(ctx):
+    server = bot.get_guild(ctx.guild.id)
+    server_id = server.id
+    if server_id not in server_parameters:
+        server_parameters[server_id] = GuildParameters(server_id)
+
+    if server_parameters[server_id].self.prefix == None:
+        await server_parameters[server_id].get_prefix()
+    else:
+        return server_parameters[server_id].self.prefix
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(Config.commands_prefix),
                    description='KBot wersja {}'.format(wersja))
