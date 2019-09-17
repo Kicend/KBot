@@ -50,6 +50,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!skazańcy", value="Lista skazańców", inline=False)
         embed.add_field(name="!czyść <liczba>", value="Służba sprzątania czatu", inline=False)
         embed.add_field(name="!dodaj_role <użytkownik> <rola>", value="Obdaruj użytkownika rolą", inline=False)
+        embed.add_field(name="!usuń_role <użytkownik> <rola>", value="Zabierz nikczemnikowi rolę", inline=False)
 
         await ctx.send(embed=embed)
 
