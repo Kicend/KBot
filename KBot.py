@@ -33,7 +33,7 @@ server_tools = {}
 server_parameters = {}
 
 # Parametry bota
-wersja = "0.20-3"
+wersja = "0.20-4"
 TOKEN = Config.TOKEN
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 
@@ -620,6 +620,16 @@ class Administration(commands.Cog):
         role_name = rola.name
         role = discord.utils.get(ctx.guild.roles, name=role_name)
         await member.add_roles(role)
+        await ctx.send("Rola została przyznana!")
+
+    @commands.command(aliases=["usuń_role"])
+    @has_permissions(manage_roles=True)
+    async def remove_role(self, ctx, member: discord.Member, rola: discord.Role):
+        """Zabierz nikczemnikowi rolę"""
+        role_name = rola.name
+        role = discord.utils.get(ctx.guild.roles, name=role_name)
+        await member.remove_roles(role)
+        await ctx.send("Rola została odebrana!")
 
     @commands.command(aliases=["zmiana_prefixu"])
     @has_permissions(administrator=True)
