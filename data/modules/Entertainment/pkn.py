@@ -1,5 +1,4 @@
-# Zgodne z KBot 0.20-x
-import discord
+# Zgodne z KBot 0.21-x
 import random
 
 async def rsp(self, ctx, hand):

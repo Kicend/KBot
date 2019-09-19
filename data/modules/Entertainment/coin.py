@@ -1,4 +1,4 @@
-# Zgodne z KBot 0.20-x
+# Zgodne z KBot 0.21-x
 import random
 
 async def coin(self, ctx):
