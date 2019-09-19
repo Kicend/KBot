@@ -1,3 +1,5 @@
+# Zgodne z KBot 0.21-1
+
 import discord
 from discord.ext import commands
 import asyncio
