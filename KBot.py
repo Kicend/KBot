@@ -60,6 +60,14 @@ async def on_guild_join(guild):
     await fw.server_parameters[server_id].join_guild()
 
 @bot.event
+async def on_guild_leave(guild):
+    server_id = guild.id
+    if server_id not in fw.server_parameters:
+        fw.server_parameters[server_id] = fw.GuildParameters(server_id)
+
+    await fw.server_parameters[server_id].leave_guild()
+
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Nie podałeś wymaganego argumentu")
