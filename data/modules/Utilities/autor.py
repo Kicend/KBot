@@ -1,4 +1,3 @@
-# Zgodne z KBot 0.19-x
 import discord
 
 async def autor(self, ctx):

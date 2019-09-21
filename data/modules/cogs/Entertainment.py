@@ -1,5 +1,3 @@
-# Zgodne z KBot 0.21-x
-
 from discord.ext import commands
 import asyncio
 import random

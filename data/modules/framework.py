@@ -1,5 +1,3 @@
-# Zgodne z KBot 0.21-x
-
 import asyncio
 import discord
 import json

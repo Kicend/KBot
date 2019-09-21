@@ -1,4 +1,3 @@
-# Zgodne z KBot 0.20-x
 import discord
 
 async def pomocy(self, ctx, los, wersja):

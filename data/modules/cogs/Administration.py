@@ -1,5 +1,3 @@
-# Zgodne z KBot 0.21-x
-
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
