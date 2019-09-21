@@ -55,6 +55,7 @@ class Music(commands.Cog):
     @commands.command()
     @has_permissions(administrator=True)
     async def adminnext(self, ctx):
+        """Pomiń pieśń jak król"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in fw.server_players:

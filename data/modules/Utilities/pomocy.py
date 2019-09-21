@@ -11,6 +11,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!wkrocz <nazwa kanału>", value="Wkracza z buta na czat głosowy", inline=False)
         embed.add_field(name="!strumykuj <url>", value="Strumykuj z interneta pieśni", inline=False)
         embed.add_field(name="!następna", value="Przewiń do kolejnej pieśni", inline=False)
+        embed.add_field(name="!adminnext", value="Pomiń pieśń jak król", inline=False)
         embed.add_field(name="!pętla <0 lub 1>", value="Zapętlij pieśń", inline=False)
         embed.add_field(name="!info", value="Wyświetl informacje o aktualnie granej pieśni", inline=False)
         embed.add_field(name="!kolejka", value="Sprawdź zawartość kolejki", inline=False)
