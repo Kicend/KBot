@@ -1,4 +1,3 @@
-# Zgodne z KBot 0.21-x
 errors_PL = {0: "Nie posiadasz wymaganej roli do wykonania tej komendy!",
              1: "Błąd bota: %s"}
 

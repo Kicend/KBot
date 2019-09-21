@@ -1,7 +1,6 @@
-# Zgodne z KBot 0.21-1
-
 import discord
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 import asyncio
 from data.modules import framework as fw
 
@@ -52,6 +51,24 @@ class Music(commands.Cog):
             await fw.server_players[server_id].vote_system(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
+
+    @commands.command()
+    @has_permissions(administrator=True)
+    async def adminnext(self, ctx):
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in fw.server_players:
+            fw.server_players[server_id] = fw.Player(server_id)
+        if fw.server_players[server_id].kolejka != []:
+            await ctx.send("Pieśń została pominięta przez administratora!")
+            ctx.voice_client.stop()
+            del fw.server_players[server_id].gra[0]
+            fw.server_players[server_id].task.cancel()
+            asyncio.run(await fw.server_players[server_id].main(ctx))
+            if fw.server_players[server_id].vote_switch == 1:
+                fw.server_players[server_id].vote_switch = 0
+                while fw.server_players[server_id].voters != []:
+                    del fw.server_players[server_id].voters[0]
 
     @commands.command(aliases=["pętla"])
     async def loop(self, ctx, switch):
