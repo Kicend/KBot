@@ -49,7 +49,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             data = data['entries'][0]
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options, before_options= "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"), data=data)
+        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options, before_options= "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 -loglevel 'quiet'"), data=data)
 
 class Player(object):
     def __init__(self, id):
