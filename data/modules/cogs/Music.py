@@ -65,11 +65,10 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
             del fw.server_players[server_id].gra[0]
             fw.server_players[server_id].task.cancel()
-            asyncio.run(await fw.server_players[server_id].main(ctx))
             if fw.server_players[server_id].vote_switch == 1:
                 fw.server_players[server_id].vote_switch = 0
-                while fw.server_players[server_id].voters != []:
-                    del fw.server_players[server_id].voters[0]
+                await fw.server_players[server_id].vote_list_clear()
+            asyncio.run(await fw.server_players[server_id].main(ctx))
 
     @commands.command(aliases=["pętla"])
     async def loop(self, ctx, switch):

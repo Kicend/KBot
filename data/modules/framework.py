@@ -125,6 +125,10 @@ class Player(object):
             if self.is_paused == 1:
                 self.now = self.save_time
 
+    async def vote_list_clear(self):
+        while self.voters != []:
+            del self.voters[0]
+
     async def vote_system(self, ctx):
         if self.vote_switch == 0:
             vc_members = discord.VoiceChannel = ctx.author.voice.channel
@@ -135,8 +139,7 @@ class Player(object):
                 del self.gra[0]
                 ctx.voice_client.stop()
                 self.task.cancel()
-                while self.voters != []:
-                    del self.voters[0]
+                await Player.vote_list_clear(self)
                 asyncio.run(await Player.main(self, ctx))
             else:
                 await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
@@ -152,8 +155,7 @@ class Player(object):
                     del self.gra[0]
                     ctx.voice_client.stop()
                     self.task.cancel()
-                    while self.voters != []:
-                        del self.voters[0]
+                    await Player.vote_list_clear(self)
                     self.vote_switch = 0
                     asyncio.run(await Player.main(self, ctx))
 
