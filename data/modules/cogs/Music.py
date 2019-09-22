@@ -71,29 +71,18 @@ class Music(commands.Cog):
             asyncio.run(await fw.server_players[server_id].main(ctx))
 
     @commands.command(aliases=["pętla"])
-    async def loop(self, ctx, switch):
+    async def loop(self, ctx):
         """Zapętlij pieśń"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        i = 0
         if server_id not in fw.server_players:
             fw.server_players[server_id] = fw.Player(server_id)
-        if fw.server_players[server_id].gra == []:
-            await ctx.send("Co ty chcesz zapętlić?")
+        if not fw.server_players[server_id].loop:
+            fw.server_players[server_id].loop = True
+            await ctx.send("Pieśń została zapętlona!")
         else:
-            i = int(switch)
-            ctx.voice_client.stop()
-        if i == 1:
-            await ctx.send("Pieśń została zapętlona")
-            url = fw.server_players[server_id].gra[0]
-        while i == 1:
-            async with ctx.typing():
-                player = await fw.YTDLSource.from_url(url, loop=False, stream=True)
-                ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
-
-                dictMeta = fw.ytdl.extract_info(url, download=False)
-                a = dictMeta['duration']
-                await asyncio.sleep(a)
+            fw.server_players[server_id].loop = False
+            await ctx.send("Pieśń została odpętlona!")
 
     @commands.command(aliases=["teraz"])
     async def current(self, ctx):

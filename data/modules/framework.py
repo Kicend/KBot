@@ -66,6 +66,7 @@ class Player(object):
         self.voters = []
         self.vote_switch = 0
         self.is_paused = 0
+        self.loop = False
 
     async def main(self, ctx):
         self.task = asyncio.create_task(Player.odtwarzacz(self, ctx))
@@ -85,6 +86,8 @@ class Player(object):
             if self.piosenki != []:
                 del self.piosenki[0]
             await Player.current_time(self, duration)
+            if self.loop:
+                await Player.loop_player(self, ctx)
             del self.gra[0]
             if self.vote_switch == 1:
                 self.vote_switch = 0
@@ -100,10 +103,21 @@ class Player(object):
         else:
             await ctx.voice_client.disconnect()
             await asyncio.sleep(30)
-            if self.gra != [] or self.kolejka !=[]:
+            if self.gra != [] or self.kolejka != []:
                 return None
             else:
                 del server_players[self.id]
+
+    async def loop_player(self, ctx):
+        url = self.gra[0]
+        dictMeta = ytdl.extract_info(url, download=False)
+        duration = dictMeta['duration']
+        while self.loop:
+            self.now = 0
+            player = await YTDLSource.from_url(url, loop=False, stream=True)
+            ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
+
+            await Player.current_time(self, duration)
 
     async def pause(self, ctx):
         self.is_paused = 1
@@ -143,6 +157,7 @@ class Player(object):
                 del self.gra[0]
                 ctx.voice_client.stop()
                 self.task.cancel()
+                self.loop = False
                 await Player.vote_list_clear(self)
                 asyncio.run(await Player.main(self, ctx))
             else:
@@ -159,6 +174,7 @@ class Player(object):
                     del self.gra[0]
                     ctx.voice_client.stop()
                     self.task.cancel()
+                    self.loop = False
                     await Player.vote_list_clear(self)
                     self.vote_switch = 0
                     asyncio.run(await Player.main(self, ctx))
