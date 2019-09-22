@@ -16,9 +16,6 @@ from data.lang.pl_PL import communicates_PL
 # Importowanie listy emoji
 # from data.reactions import reactions_db
 
-# Parametry bota
-TOKEN = config.TOKEN
-
 def get_prefix(bot, message):
     with open("data/settings/servers_prefixes/prefixes.json", "r") as f:
         prefixes = json.load(f)
@@ -34,16 +31,16 @@ status = ["KBot {}".format(config.wersja), "!pomocy <1-4>"]
 @bot.event
 async def on_connect():
     print("Bot pomyślnie połączył się z Discordem\nTrwa wczytywanie danych...")
-
-@bot.event
-async def on_ready():
-    print('Zalogowany jako {0} ({0.id})'.format(bot.user))
-    print('----------------------------------------------')
     for cog in config.__cogs__:
         try:
             bot.load_extension(cog)
         except:
             print("Nie udało się załadować rozszerzenia")
+
+@bot.event
+async def on_ready():
+    print('Zalogowany jako {0} ({0.id})'.format(bot.user))
+    print('----------------------------------------------')
     msgs = cycle(status)
     while not bot.is_closed():
         current_status = next(msgs)
@@ -83,4 +80,4 @@ async def on_command_error(ctx, error):
             error = communicates_PL.errors_PL.get(0)
         await ctx.send(error)
 
-bot.run(TOKEN)
+bot.run(config.TOKEN)
