@@ -133,6 +133,8 @@ class Music(commands.Cog):
         """Zmienia głośność bota"""
         if volume > 150:
             await ctx.send("Zgłupiałeś, chcesz ogłuchnąć!?")
+        elif volume < 0:
+            await ctx.send("Co? Niby jak?")
         else:
             if ctx.voice_client is None:
                 return await ctx.send("Nie jest połączony z żadnym czatem głosowym")
