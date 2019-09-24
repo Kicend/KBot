@@ -1,9 +1,9 @@
 import random
 
-async def rsp(self, ctx, hand):
+async def rsp(self, ctx, hand: str):
     """Zagraj ze mną w papier, kamień i nożyce"""
 
-    choices = ["papier", "kamień", "nożyce"]
+    choices = ("papier", "kamień", "nożyce")
     choice = random.choice(choices)
     w = "Wygrałeś"
     p = "Przegrałeś"
