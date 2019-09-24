@@ -23,7 +23,7 @@ async def rsp(self, ctx, hand: str):
         await ctx.send(komunikat.format(choice, w))
         i += 1
     if i == 0:
-        if hand == "nożyce" or "papier" or "kamień":
+        if hand in choices:
             await ctx.send(komunikat.format(choice, p))
         else:
             await ctx.send("Ciekawe jak tak ułożyłeś rękę?")
