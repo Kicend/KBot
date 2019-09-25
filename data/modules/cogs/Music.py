@@ -9,8 +9,10 @@ class Music(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["wkrocz"])
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
+    async def join(self, ctx, *, channel: discord.VoiceChannel = None):
         """Wkracza z buta na czat głosowy"""
+        if channel is None:
+            channel = ctx.author.voice.channel
         if ctx.voice_client is not None:
             return await ctx.voice_client.move_to(channel)
 
@@ -143,6 +145,7 @@ class Music(commands.Cog):
             await ctx.send("Głośność zmieniona na {}%".format(volume))
 
     @commands.command(aliases=["wypad"])
+    @has_permissions(manage_channels=True)
     async def leave(self, ctx):
         """Zatrzymuje bota i rozłącza go z czatem głosowym"""
         server = self.bot.get_guild(ctx.guild.id)

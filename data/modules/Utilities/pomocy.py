@@ -8,11 +8,11 @@ async def pomocy(self, ctx, los, wersja):
         )
 
         embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/4)".format(wersja))
-        embed.add_field(name="!wkrocz <nazwa kanału>", value="Wkracza z buta na czat głosowy", inline=False)
+        embed.add_field(name="!wkrocz {nazwa kanału}", value="Wkracza z buta na czat głosowy", inline=False)
         embed.add_field(name="!strumykuj <url>", value="Strumykuj z interneta pieśni", inline=False)
         embed.add_field(name="!następna", value="Przewiń do kolejnej pieśni", inline=False)
         embed.add_field(name="!adminnext", value="Pomiń pieśń jak król", inline=False)
-        embed.add_field(name="!pętla <0 lub 1>", value="Zapętlij pieśń", inline=False)
+        embed.add_field(name="!pętla", value="Zapętlij pieśń", inline=False)
         embed.add_field(name="!info", value="Wyświetl informacje o aktualnie granej pieśni", inline=False)
         embed.add_field(name="!kolejka", value="Sprawdź zawartość kolejki", inline=False)
         embed.add_field(name="!czyść_kolejke", value="Wyczyść kolejkę z niepotrzebnych pieśni", inline=False)
@@ -48,7 +48,7 @@ async def pomocy(self, ctx, los, wersja):
         embed.add_field(name="!ukarz", value="Ukarz delikwenta na tułaczkę", inline=False)
         embed.add_field(name="!wybacz", value="Wybacz mu", inline=False)
         embed.add_field(name="!skazańcy", value="Lista skazańców", inline=False)
-        embed.add_field(name="!czyść <liczba>", value="Służba sprzątania czatu", inline=False)
+        embed.add_field(name="!czyść <liczba> {użytkownik}", value="Służba sprzątania czatu", inline=False)
         embed.add_field(name="!dodaj_role <użytkownik> <rola>", value="Obdaruj użytkownika rolą", inline=False)
         embed.add_field(name="!usuń_role <użytkownik> <rola>", value="Zabierz nikczemnikowi rolę", inline=False)
 
