@@ -164,6 +164,7 @@ class Music(commands.Cog):
         await ctx.send("Pamięć podręczna została wyczyszczona")
 
     @commands.command(aliases=["czyść_kolejke"])
+    @commands.has_role("DJ")
     async def delete_queue(self, ctx):
         """Wyczyść kolejkę z niepotrzebnych pieśni"""
         server = self.bot.get_guild(ctx.guild.id)
@@ -202,8 +203,7 @@ class Music(commands.Cog):
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                await ctx.send("Nie jesteś związany z żadnym czatem głosowym")
-                raise commands.CommandError("Błąd, wleź na jakiś kanał głosowy")
+                raise commands.CommandError("Nie jesteś związany z żadnym czatem głosowym")
 
 def setup(bot):
     bot.add_cog(Music(bot))
