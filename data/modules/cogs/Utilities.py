@@ -24,7 +24,8 @@ class Utilities(commands.Cog):
     async def invite(self, ctx):
         """We no zaproś na serwerek"""
         await ctx.send("Proszę szefuńciu, świeżo wydrukowane\n"
-                       "https://discordapp.com/oauth2/authorize?client_id=570288534020161538&permissions=3230726&scope=bot")
+                       "https://discordapp.com/oauth2/authorize?client_id=570288534020161538&permissions=3230726&scope=bot"
+                       )
 
     @commands.command()
     async def info_bot(self, ctx):
