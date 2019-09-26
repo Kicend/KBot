@@ -145,7 +145,7 @@ class Music(commands.Cog):
             await ctx.send("Głośność zmieniona na {}%".format(volume))
 
     @commands.command(aliases=["wypad"])
-    @has_permissions(manage_channels=True)
+    @commands.has_role("DJ")
     async def leave(self, ctx):
         """Zatrzymuje bota i rozłącza go z czatem głosowym"""
         server = self.bot.get_guild(ctx.guild.id)
