@@ -247,23 +247,19 @@ class Tools(object):
 class GuildParameters(object):
     def __init__(self, id):
         self.id = id
-        self.prefix = None
+        self.require_dj = None
         self.filename = "data/settings/servers_settings/{}.json".format(self.id)
         self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
 
     async def join_guild(self):
-        guild_parameters = {"prefix": "!"}
+        guild_parameters = {"require_dj": False, "QSP": True, "autorole": None}
         server_prefix = {str(self.id): "!"}
         if not os.path.isfile(self.filename):
             with open(self.filename, "a+") as f:
                 json.dump(guild_parameters, f, indent=4)
                 f.close()
         if not os.path.isfile(self.filename_prefixes):
-            with open(self.filename_prefixes, "a+") as f:
-                json.dump(server_prefix, f, indent=4)
-                f.close()
-        else:
-            with open(self.filename_prefixes, "r+") as f:
+            with open(self.filename_prefixes, "a") as f:
                 json.dump(server_prefix, f, indent=4)
                 f.close()
 
@@ -284,3 +280,18 @@ class GuildParameters(object):
                 json.dump(prefixes, f, indent=4)
                 f.close()
                 await ctx.send("Prefix został pomyślnie zmieniony na '{}'".format(prefix))
+
+    async def check_permissions(self, ctx):
+        if self.require_dj is None:
+            with open(self.filename, "r") as f:
+                guild_parameters = json.load(f)
+                self.require_dj = guild_parameters["require_dj"]
+                f.close()
+        elif self.require_dj is True:
+            user_ext_info: discord.Member = ctx.author
+            if "DJ" in user_ext_info.roles:
+                return True
+            else:
+                return False
+        elif self.require_dj is False:
+            return True
