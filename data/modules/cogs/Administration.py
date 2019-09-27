@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
-from data.modules import framework as fw
+from data.modules import core as cr
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -20,10 +20,10 @@ class Administration(commands.Cog):
         """Ukarz delikwenta na tułaczkę"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in fw.server_tools:
-            fw.server_tools[server_id] = fw.Tools(server_id)
+        if server_id not in cr.server_tools:
+            cr.server_tools[server_id] = cr.Tools(server_id)
 
-        await fw.server_tools[server_id].ban(ctx, member, reason)
+        await cr.server_tools[server_id].ban(ctx, member, reason)
 
     @commands.command(aliases=["wybacz"])
     @has_permissions(ban_members=True)
@@ -31,10 +31,10 @@ class Administration(commands.Cog):
         """Wybacz mu"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in fw.server_tools:
-            fw.server_tools[server_id] = fw.Tools(server_id)
+        if server_id not in cr.server_tools:
+            cr.server_tools[server_id] = cr.Tools(server_id)
 
-        await fw.server_tools[server_id].unban(ctx, members)
+        await cr.server_tools[server_id].unban(ctx, members)
 
     @commands.command(aliases=["skazańcy"])
     @has_permissions(manage_guild=True)
@@ -42,10 +42,10 @@ class Administration(commands.Cog):
         """Lista skazańców"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in fw.server_tools:
-            fw.server_tools[server_id] = fw.Tools(server_id)
+        if server_id not in cr.server_tools:
+            cr.server_tools[server_id] = cr.Tools(server_id)
 
-        await fw.server_tools[server_id].banlist_display(ctx)
+        await cr.server_tools[server_id].banlist_display(ctx)
 
     @commands.command()
     @has_permissions(manage_messages=True)
@@ -87,10 +87,10 @@ class Administration(commands.Cog):
     async def change_prefix(self, ctx, prefix: str):
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in fw.server_parameters:
-            fw.server_parameters[server_id] = fw.GuildParameters(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
 
-        await fw.server_parameters[server_id].change_prefix(ctx, prefix)
+        await cr.server_parameters[server_id].change_prefix(ctx, prefix)
 
 def setup(bot):
     bot.add_cog(Administration(bot))

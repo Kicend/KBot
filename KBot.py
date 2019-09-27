@@ -5,7 +5,7 @@ from itertools import cycle
 import json
 
 # Importowanie framework'u
-from data.modules import framework as fw
+from data.modules import core as cr
 
 # Importowanie konfiguracji bota
 from data.settings.bot_basic_parameters import config
@@ -51,18 +51,18 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     server_id = guild.id
-    if server_id not in fw.server_parameters:
-        fw.server_parameters[server_id] = fw.GuildParameters(server_id)
+    if server_id not in cr.server_parameters:
+        cr.server_parameters[server_id] = cr.GuildParameters(server_id)
 
-    await fw.server_parameters[server_id].join_guild()
+    await cr.server_parameters[server_id].join_guild()
 
 @bot.event
 async def on_guild_leave(guild):
     server_id = guild.id
-    if server_id not in fw.server_parameters:
-        fw.server_parameters[server_id] = fw.GuildParameters(server_id)
+    if server_id not in cr.server_parameters:
+        cr.server_parameters[server_id] = cr.GuildParameters(server_id)
 
-    await fw.server_parameters[server_id].leave_guild()
+    await cr.server_parameters[server_id].leave_guild()
 
 @bot.event
 async def on_command_error(ctx, error):
