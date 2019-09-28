@@ -101,8 +101,8 @@ class Utilities(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
-        await cr.server_parameters[server_id].check_config
-        if setting and switch is None:
+        await cr.server_parameters[server_id].check_config()
+        if setting is None and switch is None:
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
