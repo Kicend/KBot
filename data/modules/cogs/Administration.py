@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from data.modules.utils import core as cr
-from data.settings.bot_basic_parameters import config
 
 class Administration(commands.Cog):
     def __init__(self, bot):

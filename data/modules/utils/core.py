@@ -247,7 +247,7 @@ class Tools(object):
 class GuildParameters(object):
     def __init__(self, id):
         self.id = id
-        self.config = []
+        self.config = {}
         self.require_dj = None
         self.filename = "data/settings/servers_settings/{}.json".format(self.id)
         self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
