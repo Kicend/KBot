@@ -1,6 +1,6 @@
 import discord
 
-async def user(self, ctx, user_ext_info: discord.Member):
+async def user(ctx, user_ext_info: discord.Member):
     roles = [role for role in user_ext_info.roles]
 
     embed = discord.Embed(

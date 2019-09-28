@@ -15,11 +15,11 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=["pomocy"])
     async def help(self, ctx, los=1):
-        await pomocy(self, ctx, los=los, wersja=config.wersja)
+        await pomocy(ctx, los=los, wersja=config.wersja)
 
     @commands.command()
     async def autor(self, ctx):
-        await autor(self, ctx)
+        await autor(ctx)
 
     @commands.command(aliases=["zaproszenie"])
     async def invite(self, ctx):
@@ -80,7 +80,7 @@ class Utilities(commands.Cog):
     @has_permissions(manage_messages=True)
     async def user(self, ctx, user_ext_info: discord.Member):
         """Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"""
-        await user(self, ctx, user_ext_info)
+        await user(ctx, user_ext_info)
 
     @commands.command(aliases=["zmiana_prefixu"])
     @has_permissions(administrator=True)
@@ -101,13 +101,12 @@ class Utilities(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
-        await cr.server_parameters[server_id].check_config()
         if setting is None and switch is None:
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Ustawienia bota Kbot {}".format(config.wersja))
+            embed.set_author(name="Ustawienia bota KBot {}".format(config.wersja))
             embed.add_field(name="Wymagana rola DJ: {}".format(
                 cr.server_parameters[server_id].config["require_dj"]),
                 value="!settings dj <on/off>", inline=False
@@ -119,6 +118,10 @@ class Utilities(commands.Cog):
             embed.add_field(name="Autorola: {}".format(
                 cr.server_parameters[server_id].config["autorole"]),
                 value="!settings autorole <rola do przydzielenia>", inline=False
+            )
+            embed.add_field(name="Symbol waluty: {}".format(
+                cr.server_parameters[server_id].config["currency_symbol"]),
+                value="!settings curr_symbol <symbol>", inline=False
             )
 
             await ctx.send(embed=embed)

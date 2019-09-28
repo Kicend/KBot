@@ -1,6 +1,11 @@
 import discord
+from data.modules.utils.core import server_parameters, GuildParameters
 
-async def pomocy(self, ctx, los, wersja):
+async def pomocy(ctx, los, wersja):
+    # server = bot.get_guild(ctx.guild.id)
+    # server_id = server.id
+    # if server_id not in server_parameters:
+    #   server_parameters[server_id] = GuildParameters[server_id]
     decyzja = int(los)
     if decyzja == 1:
         embed = discord.Embed(

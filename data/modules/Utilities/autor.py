@@ -1,6 +1,6 @@
 import discord
 
-async def autor(self, ctx):
+async def autor(ctx):
     """Wpiszta by się dowiedzieć więcej o Stwórcy tego dzieła"""
     embed = discord.Embed(
         colour=discord.Colour.blue()
