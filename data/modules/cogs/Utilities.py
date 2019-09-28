@@ -101,6 +101,7 @@ class Utilities(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        server_config = await cr.server_parameters[server_id].config
         if setting is None and switch is None:
             embed = discord.Embed(
                 colour=discord.Colour.blue()
@@ -108,19 +109,19 @@ class Utilities(commands.Cog):
 
             embed.set_author(name="Ustawienia bota KBot {}".format(config.wersja))
             embed.add_field(name="Wymagana rola DJ: {}".format(
-                cr.server_parameters[server_id].config["require_dj"]),
+                server_config["require_dj"]),
                 value="!settings dj <on/off>", inline=False
             )
             embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
-                cr.server_parameters[server_id].config["QSP"]),
+                server_config["QSP"]),
                 value="!settings QSP <on/off>", inline=False
             )
             embed.add_field(name="Autorola: {}".format(
-                cr.server_parameters[server_id].config["autorole"]),
+                server_config["autorole"]),
                 value="!settings autorole <rola do przydzielenia>", inline=False
             )
             embed.add_field(name="Symbol waluty: {}".format(
-                cr.server_parameters[server_id].config["currency_symbol"]),
+                server_config["currency_symbol"]),
                 value="!settings curr_symbol <symbol>", inline=False
             )
 

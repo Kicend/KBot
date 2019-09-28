@@ -247,9 +247,9 @@ class Tools(object):
 class GuildParameters(object):
     def __init__(self, id):
         self.id = id
-        self.config = await GuildParameters.check_config(self)
+        self.config = GuildParameters.check_config(self)
         self.require_dj = None
-        self.prefix = await GuildParameters.get_prefix(self)
+        self.prefix = GuildParameters.get_prefix(self)
         self.filename = "data/settings/servers_settings/{}.json".format(self.id)
         self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
 
@@ -277,7 +277,7 @@ class GuildParameters(object):
         with open("data/settings/servers_prefixes/prefixes.json", "r") as f:
             prefixes = json.load(f)
             server_prefix = prefixes[self.id]
-            return server_prefix
+        return server_prefix
 
     async def change_prefix(self, ctx, prefix: str):
         if os.path.isfile(self.filename_prefixes):
