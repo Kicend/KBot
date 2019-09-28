@@ -7,6 +7,7 @@ import os
 from data.modules.Utilities.pomocy import pomocy
 from data.modules.Utilities.autor import autor
 from data.modules.Utilities.user import user
+from data.modules.utils import core as cr
 
 class Utilities(commands.Cog):
     def __init__(self, bot):
@@ -80,6 +81,44 @@ class Utilities(commands.Cog):
     async def user(self, ctx, user_ext_info: discord.Member):
         """Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"""
         await user(self, ctx, user_ext_info)
+
+    @commands.command(aliases=["zmiana_prefixu"])
+    @has_permissions(administrator=True)
+    async def change_prefix(self, ctx, prefix: str):
+        """Zmiana prefixu bota"""
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+
+        await cr.server_parameters[server_id].change_prefix(ctx, prefix)
+
+    @commands.command(aliases=["ustawienia"])
+    @has_permissions(administrator=True)
+    async def settings(self, ctx, setting=None, switch=None):
+        """Panel Ustawień"""
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        if setting and switch is None:
+            embed = discord.Embed(
+                colour=discord.Colour.blue()
+            )
+
+            embed.set_author(name="Ustawienia bota Kbot {}".format(config.wersja))
+            embed.add_field(name="Wymagana rola DJ: {}".format(
+                cr.server_parameters[server_id].config["dj_require"]),
+                value="!settings dj <on/off>", inline=False
+            )
+            embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
+                cr.server_parameters[server_id].config["QSP"]),
+                value="!settings QSP <on/off>", inline=False
+            )
+            embed.add_field(name="Autorola: {}".format(
+                cr.server_parameters[server_id].config["autorole"]),
+                value="!settings autorole <rola do przydzielenia>", inline=False
+            )
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

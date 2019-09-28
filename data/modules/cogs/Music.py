@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 import asyncio
-from data.modules import core as cr
+from data.modules.utils import core as cr
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -145,23 +145,28 @@ class Music(commands.Cog):
             await ctx.send("Głośność zmieniona na {}%".format(volume))
 
     @commands.command(aliases=["wypad"])
-    @commands.has_role("DJ")
     async def leave(self, ctx):
         """Zatrzymuje bota i rozłącza go z czatem głosowym"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
-        await ctx.voice_client.disconnect()
-        if cr.server_players[server_id].kolejka != []:
-            while cr.server_players[server_id].kolejka != []:
-                del cr.server_players[server_id].kolejka[0]
-        if cr.server_players[server_id].piosenki != []:
-            while cr.server_players[server_id].piosenki != []:
-                del cr.server_players[server_id].piosenki[0]
-        del cr.server_players[server_id].gra[0]
-        del cr.server_players[server_id]
-        await ctx.send("Pamięć podręczna została wyczyszczona")
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
+        if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
+            await ctx.voice_client.disconnect()
+            if cr.server_players[server_id].kolejka != []:
+                while cr.server_players[server_id].kolejka != []:
+                    del cr.server_players[server_id].kolejka[0]
+            if cr.server_players[server_id].piosenki != []:
+                while cr.server_players[server_id].piosenki != []:
+                    del cr.server_players[server_id].piosenki[0]
+            del cr.server_players[server_id].gra[0]
+            del cr.server_players[server_id]
+            await ctx.send("Pamięć podręczna została wyczyszczona")
+        else:
+            await ctx.send("Nie posiadasz roli DJ!")
 
     @commands.command(aliases=["czyść_kolejke"])
     @commands.has_role("DJ")

@@ -2,9 +2,6 @@ import discord
 
 async def autor(self, ctx):
     """Wpiszta by się dowiedzieć więcej o Stwórcy tego dzieła"""
-
-    author = ctx.message.author
-
     embed = discord.Embed(
         colour=discord.Colour.blue()
     )
@@ -22,4 +19,4 @@ async def autor(self, ctx):
     embed.add_field(name="Podziękowania", value="Dzięki też, że w ogóle chciało Ci się to dodawać na serwa",
                     inline=False)
 
-    await ctx.send(author, embed=embed)
+    await ctx.send(embed=embed)

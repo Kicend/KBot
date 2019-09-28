@@ -5,7 +5,7 @@ from itertools import cycle
 import json
 
 # Importowanie framework'u
-from data.modules import core as cr
+from data.modules.utils import core as cr
 
 # Importowanie konfiguracji bota
 from data.settings.bot_basic_parameters import config

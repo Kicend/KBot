@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
-from data.modules import core as cr
+from data.modules.utils import core as cr
+from data.settings.bot_basic_parameters import config
 
 class Administration(commands.Cog):
     def __init__(self, bot):
@@ -81,16 +82,6 @@ class Administration(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name=role_name)
         await member.remove_roles(role)
         await ctx.send("Rola została odebrana!")
-
-    @commands.command(aliases=["zmiana_prefixu"])
-    @has_permissions(administrator=True)
-    async def change_prefix(self, ctx, prefix: str):
-        server = self.bot.get_guild(ctx.guild.id)
-        server_id = server.id
-        if server_id not in cr.server_parameters:
-            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
-
-        await cr.server_parameters[server_id].change_prefix(ctx, prefix)
 
 def setup(bot):
     bot.add_cog(Administration(bot))

@@ -247,12 +247,13 @@ class Tools(object):
 class GuildParameters(object):
     def __init__(self, id):
         self.id = id
+        self.config = []
         self.require_dj = None
         self.filename = "data/settings/servers_settings/{}.json".format(self.id)
         self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
 
     async def join_guild(self):
-        guild_parameters = {"require_dj": False, "QSP": True, "autorole": None}
+        guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
         server_prefix = {str(self.id): "!"}
         if not os.path.isfile(self.filename):
             with open(self.filename, "a+") as f:
@@ -281,17 +282,27 @@ class GuildParameters(object):
                 f.close()
                 await ctx.send("Prefix został pomyślnie zmieniony na '{}'".format(prefix))
 
-    async def check_permissions(self, ctx):
+    async def check_permissions(self, ctx, role: str):
         if self.require_dj is None:
             with open(self.filename, "r") as f:
                 guild_parameters = json.load(f)
                 self.require_dj = guild_parameters["require_dj"]
                 f.close()
-        elif self.require_dj is True:
+        if self.require_dj == "on":
             user_ext_info: discord.Member = ctx.author
-            if "DJ" in user_ext_info.roles:
-                return True
+            role = discord.utils.get(ctx.guild.roles, name=role)
+            if role is None:
+                await ctx.send("Serwer nie posiada roli DJ!")
             else:
-                return False
-        elif self.require_dj is False:
+                if role in user_ext_info.roles:
+                    return True
+                else:
+                    return False
+        elif self.require_dj == "off":
             return True
+
+    async def check_config(self):
+        if not self.config:
+            with open(self.filename, "r") as f:
+                self.config = json.load(f)
+                f.close()
