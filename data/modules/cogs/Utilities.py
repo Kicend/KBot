@@ -120,5 +120,7 @@ class Utilities(commands.Cog):
                 value="!settings autorole <rola do przydzielenia>", inline=False
             )
 
+        await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Utilities(bot))
