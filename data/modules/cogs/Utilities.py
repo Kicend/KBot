@@ -109,7 +109,7 @@ class Utilities(commands.Cog):
 
             embed.set_author(name="Ustawienia bota Kbot {}".format(config.wersja))
             embed.add_field(name="Wymagana rola DJ: {}".format(
-                cr.server_parameters[server_id].config["dj_require"]),
+                cr.server_parameters[server_id].config["require_dj"]),
                 value="!settings dj <on/off>", inline=False
             )
             embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
