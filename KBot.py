@@ -53,8 +53,11 @@ async def on_guild_join(guild):
     server_id = guild.id
     if server_id not in cr.server_parameters:
         cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+    if server_id not in cr.server_economy:
+        cr.server_economy[server_id] = cr.EcoMethods(server_id)
 
     await cr.server_parameters[server_id].join_guild()
+    await cr.server_economy[server_id].join_guild(server_id)
 
 @bot.event
 async def on_guild_leave(guild):
