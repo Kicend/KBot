@@ -8,6 +8,7 @@ from data.lang.pl_PL import communicates_PL
 server_players = {}
 server_tools = {}
 server_parameters = {}
+server_economy = {}
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -313,3 +314,26 @@ class GuildParameters(object):
             config = json.load(f)
             f.close()
         return config
+
+class EcoMethods(object):
+    def __init__(self, id):
+        self.id = id
+        self.members_accounts = EcoMethods.check_accounts(self)
+        self.eco_filname = "data/eco_db/{}.json".format(self.id)
+
+    async def join_guild(self, guild: discord.Guild):
+        members_list = guild.members
+        members_accounts = {}
+        for member in members_list:
+            members_accounts[str(member.id)] = 0
+        with open(self.eco_filname, "a") as f:
+            json.dump(members_accounts, f, indent=4)
+            f.close()
+
+        # TODO Wykluczenie botów
+
+    async def check_accounts(self):
+        with open(self.eco_filname, "r") as f:
+            accounts = json.load(f)
+            f.close()
+        return accounts
