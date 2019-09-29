@@ -251,11 +251,17 @@ class Music(commands.Cog):
 
     @play.before_invoke
     async def ensure_voice(self, ctx):
-        if ctx.voice_client is None:
-            if ctx.author.voice:
-                await ctx.author.voice.channel.connect()
-            else:
-                raise commands.CommandError("Nie jesteś związany z żadnym czatem głosowym")
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
+        if has_permission is True:
+            if ctx.voice_client is None:
+                if ctx.author.voice:
+                    await ctx.author.voice.channel.connect()
+                else:
+                    raise commands.CommandError("Nie jesteś związany z żadnym czatem głosowym")
 
 def setup(bot):
     bot.add_cog(Music(bot))
