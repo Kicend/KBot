@@ -56,19 +56,35 @@ class Music(commands.Cog):
         else:
             await ctx.send("Nie posiadasz roli DJ!")
 
-    @commands.command(aliases=["następna"])
+    @commands.command(aliases=["następna", "skip"])
     async def next(self, ctx):
         """Przewiń do kolejnej pieśni"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
-        if cr.server_players[server_id].kolejka != []:
-            await cr.server_players[server_id].vote_system(ctx)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
+        if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
+            if cr.server_players[server_id].kolejka != []:
+                await ctx.send("Pieśń została pominięta przez DJ'a!")
+                ctx.voice_client.stop()
+                del cr.server_players[server_id].gra[0]
+                cr.server_players[server_id].task.cancel()
+                if cr.server_players[server_id].vote_switch == 1:
+                    cr.server_players[server_id].vote_switch = 0
+                    await cr.server_players[server_id].vote_list_clear()
+                asyncio.run(await cr.server_players[server_id].main(ctx))
         else:
-            await ctx.send("Brak pieśni w kolejce")
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
+            if cr.server_players[server_id].kolejka != []:
+                await cr.server_players[server_id].vote_system(ctx)
+            else:
+                await ctx.send("Brak pieśni w kolejce")
 
-    @commands.command()
+    @commands.command(aliases=["adminskip"])
     @has_permissions(administrator=True)
     async def adminnext(self, ctx):
         """Pomiń pieśń jak król"""
