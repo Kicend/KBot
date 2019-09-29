@@ -31,13 +31,15 @@ class Music(commands.Cog):
         """Strumykuj z interneta pieśni"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if not url.count("https"):
-            await ctx.send("Wyszukiwanie muzyki zostało tymczasowo wyłączone. Przyjmowane są tylko adresy URL!")
-        else:
-            if server_id not in cr.server_players:
-                cr.server_players[server_id] = cr.Player(server_id)
-            has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
-            if has_permission is True:
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
+        if has_permission is True:
+            if not url.count("https"):
+                await ctx.send("Wyszukiwanie muzyki zostało tymczasowo wyłączone. Przyjmowane są tylko adresy URL!")
+            else:
+                if server_id not in cr.server_players:
+                    cr.server_players[server_id] = cr.Player(server_id)
                 if cr.server_players[server_id].gra == []:
                     await ctx.send("Rozpoczynam odtwarzanie")
                     cr.server_players[server_id].kolejka.append(url)
@@ -51,8 +53,8 @@ class Music(commands.Cog):
                         title = dictMeta['title']
                         cr.server_players[server_id].piosenki.append(title)
                         await ctx.send("Pieśń dodana do kolejki")
-            else:
-                await ctx.send("Nie posiadasz roli DJ!")
+        else:
+            await ctx.send("Nie posiadasz roli DJ!")
 
     @commands.command(aliases=["następna"])
     async def next(self, ctx):
@@ -89,10 +91,12 @@ class Music(commands.Cog):
         """Zapętlij pieśń"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
             if not cr.server_players[server_id].loop:
                 cr.server_players[server_id].loop = True
                 await ctx.send("Pieśń została zapętlona!")
@@ -131,10 +135,12 @@ class Music(commands.Cog):
         """Pauzuje graną pieśń"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
             await cr.server_players[server_id].pause(ctx)
             await ctx.send("Pieśń została zapauzowana")
         else:
@@ -145,10 +151,12 @@ class Music(commands.Cog):
         """Wznawia wstrzymaną pieśń"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
             await cr.server_players[server_id].resume(ctx)
             await ctx.send("Pieśń została wznowiona")
         else:
@@ -163,6 +171,8 @@ class Music(commands.Cog):
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
             if volume > 150:
                 await ctx.send("Zgłupiałeś, chcesz ogłuchnąć!?")
             elif volume < 0:
@@ -201,15 +211,16 @@ class Music(commands.Cog):
             await ctx.send("Nie posiadasz roli DJ!")
 
     @commands.command(aliases=["czyść_kolejke"])
-    @commands.has_role("DJ")
     async def delete_queue(self, ctx):
         """Wyczyść kolejkę z niepotrzebnych pieśni"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
-        if server_id not in cr.server_players:
-            cr.server_players[server_id] = cr.Player(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         if has_permission is True:
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
             while cr.server_players[server_id].kolejka != []:
                 del cr.server_players[server_id].kolejka[0]
             while cr.server_players[server_id].piosenki != []:
