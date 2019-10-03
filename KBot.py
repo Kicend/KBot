@@ -57,7 +57,7 @@ async def on_guild_join(guild):
         cr.server_economy[server_id] = cr.EcoMethods(server_id)
 
     await cr.server_parameters[server_id].join_guild()
-    await cr.server_economy[server_id].join_guild(server_id)
+    await cr.server_economy[server_id].join_guild(guild)
 
 @bot.event
 async def on_guild_leave(guild):

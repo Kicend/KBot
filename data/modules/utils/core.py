@@ -325,12 +325,12 @@ class EcoMethods(object):
         members_list = guild.members
         members_accounts = {}
         for member in members_list:
-            members_accounts[str(member.id)] = 0
+            discord.User = member
+            if member.bot is False:
+                members_accounts[str(member.id)] = 0
         with open(self.eco_filname, "a") as f:
             json.dump(members_accounts, f, indent=4)
             f.close()
-
-        # TODO Wykluczenie botów
 
     async def check_accounts(self):
         with open(self.eco_filname, "r") as f:
