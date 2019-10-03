@@ -14,6 +14,8 @@ class Economy(commands.Cog):
             cr.server_economy[server_id] = cr.EcoMethods(server_id)
         if ctx.author.id == user.id:
             await ctx.send("Nie ma sensu dawać sobie pieniądze, przecież już je masz!")
+        elif user.bot is True:
+            await ctx.send("Boty nie posiadają konta bankowego!")
         else:
             if amount < 0:
                 await ctx.send("Nie możesz płacić ujemną kwotą!")
