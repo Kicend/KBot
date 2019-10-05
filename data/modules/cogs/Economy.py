@@ -73,5 +73,15 @@ class Economy(commands.Cog):
                 await ctx.send("Dodałeś {} $ na konto użytkownika {}\n"
                                "Jego stan konta wynosi teraz {} $".format(amount, user.name, account_receiver))
 
+    @commands.command(aliases=["reset_ekonomii"])
+    @has_permissions(administrator=True)
+    async def reset_eco(self, ctx):
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_economy:
+            cr.server_economy[server_id] = cr.EcoMethods(server_id)
+        await cr.server_economy[server_id].join_guild(ctx.guild, 1)
+        await ctx.send("Ekonomia została zresetowana!")
+
 def setup(bot):
     bot.add_cog(Economy(bot))

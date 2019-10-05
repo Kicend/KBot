@@ -321,16 +321,21 @@ class EcoMethods(object):
         self.members_accounts = EcoMethods.check_accounts(self)
         self.eco_filname = "data/eco_db/{}.json".format(self.id)
 
-    async def join_guild(self, guild: discord.Guild):
+    async def join_guild(self, guild: discord.Guild, i: int):
         members_list = guild.members
         members_accounts = {}
         for member in members_list:
             discord.User = member
             if member.bot is False:
                 members_accounts[str(member.id)] = 0
-        with open(self.eco_filname, "a") as f:
-            json.dump(members_accounts, f, indent=4)
-            f.close()
+        if i == 0:
+            with open(self.eco_filname, "a") as f:
+                json.dump(members_accounts, f, indent=4)
+                f.close()
+        else:
+            with open(self.eco_filname, "w") as f:
+                json.dump(members_accounts, f, indent=4)
+                f.close()
 
     async def check_accounts(self):
         with open(self.eco_filname, "r") as f:
@@ -361,3 +366,5 @@ class EcoMethods(object):
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
             f.close()
+
+# TODO: Scalenie funkcji check_accounts i check_account w jedną
