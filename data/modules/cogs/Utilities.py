@@ -14,6 +14,12 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=["pomocy"])
     async def help(self, ctx, los=1):
+        # server = self.bot.get_guild(ctx.guild.id)
+        # server_id = server.id
+        # if server_id not in cr.server_parameters:
+        #    cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        # prefix = await cr.server_parameters[server_id].prefix
+
         wersja = config.wersja
         decyzja = int(los)
         if decyzja == 1:
