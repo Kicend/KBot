@@ -275,9 +275,9 @@ class GuildParameters(object):
             f.close()
 
     async def get_prefix(self):
-        with open("data/settings/servers_prefixes/prefixes.json", "r") as f:
+        with open(self.filename_prefixes, "r") as f:
             prefixes = json.load(f)
-            server_prefix = prefixes[self.id]
+            server_prefix = prefixes[str(self.id)]
             f.close()
         return server_prefix
 
