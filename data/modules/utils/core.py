@@ -278,6 +278,7 @@ class GuildParameters(object):
         with open("data/settings/servers_prefixes/prefixes.json", "r") as f:
             prefixes = json.load(f)
             server_prefix = prefixes[self.id]
+            f.close()
         return server_prefix
 
     async def change_prefix(self, ctx, prefix: str):
