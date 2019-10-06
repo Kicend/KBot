@@ -368,3 +368,7 @@ class EcoMethods(object):
             f.close()
 
 # TODO: Scalenie funkcji check_accounts i check_account w jedną
+
+# Zbiór małych funkcji
+def sortSecond(value):
+    return value[1]
