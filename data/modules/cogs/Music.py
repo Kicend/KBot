@@ -72,6 +72,8 @@ class Music(commands.Cog):
                 ctx.voice_client.stop()
                 del cr.server_players[server_id].gra[0]
                 cr.server_players[server_id].task.cancel()
+                if cr.server_players[server_id].loop:
+                    cr.server_players[server_id].loop = False
                 if cr.server_players[server_id].vote_switch == 1:
                     cr.server_players[server_id].vote_switch = 0
                     await cr.server_players[server_id].vote_list_clear()
