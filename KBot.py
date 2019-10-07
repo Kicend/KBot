@@ -4,7 +4,7 @@ from discord.ext import commands
 from itertools import cycle
 import json
 
-# Importowanie framework'u
+# Importowanie rdzenia
 from data.modules.utils import core as cr
 
 # Importowanie konfiguracji bota
