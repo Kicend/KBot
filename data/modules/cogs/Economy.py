@@ -26,16 +26,21 @@ class Economy(commands.Cog):
                 accounts = await cr.server_economy[server_id].check_accounts()
                 sender = str(ctx.author.id)
                 receiver = str(user.id)
-                account_sender = accounts[sender]
-                account_receiver = accounts[receiver]
-                if account_sender < amount:
-                    await ctx.send("Nie masz wystarczających środków na koncie!")
+                if accounts[receiver] + amount > 1000000000:
+                    await ctx.send("Nie możesz przelać pieniędzy, ponieważ limit wynosi 1 000 000 000!")
                 else:
-                    account_sender -= amount
-                    account_receiver += amount
-                    await cr.server_economy[server_id].money_transfer(sender, receiver, account_sender, account_receiver)
-                    await ctx.send("Transakcja wykonana pomyślnie!\n"
-                                   "Twój stan konta wynosi teraz {} $!".format(account_sender))
+                    account_sender = accounts[sender]
+                    account_receiver = accounts[receiver]
+                    if account_sender < amount:
+                        await ctx.send("Nie masz wystarczających środków na koncie!")
+                    else:
+                        account_sender -= amount
+                        account_receiver += amount
+                        await cr.server_economy[server_id].money_transfer(
+                            sender, receiver, account_sender, account_receiver
+                        )
+                        await ctx.send("Transakcja wykonana pomyślnie!\n"
+                                       "Twój stan konta wynosi teraz {} $!".format(account_sender))
 
     @commands.command(aliases=["stan_konta"])
     async def money(self, ctx, user: discord.User = None):
@@ -64,14 +69,17 @@ class Economy(commands.Cog):
         else:
             accounts = await cr.server_economy[server_id].check_accounts()
             receiver = str(user.id)
-            account_receiver = accounts[receiver] + amount
-            await cr.server_economy[server_id].add_money(receiver, account_receiver)
-            if user.id == ctx.author.id:
-                await ctx.send("Dodałeś sobie {} $ na konto!\n"
-                               "Twój stan konta wynosi teraz {} $!".format(amount, account_receiver))
+            if accounts[receiver] + amount > 1000000000:
+                await ctx.send("Nie możesz dodać pieniędzy, ponieważ limit wynosi 1 000 000 000!")
             else:
-                await ctx.send("Dodałeś {} $ na konto użytkownika {}\n"
-                               "Jego stan konta wynosi teraz {} $".format(amount, user.name, account_receiver))
+                account_receiver = accounts[receiver] + amount
+                await cr.server_economy[server_id].add_money(receiver, account_receiver)
+                if user.id == ctx.author.id:
+                    await ctx.send("Dodałeś sobie {} $ na konto!\n"
+                                   "Twój stan konta wynosi teraz {} $!".format(amount, account_receiver))
+                else:
+                    await ctx.send("Dodałeś {} $ na konto użytkownika {}\n"
+                                   "Jego stan konta wynosi teraz {} $".format(amount, user.name, account_receiver))
 
     @commands.command(aliases=["reset_ekonomii"])
     @has_permissions(administrator=True)
