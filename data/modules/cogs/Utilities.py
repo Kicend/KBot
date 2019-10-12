@@ -65,7 +65,8 @@ class Utilities(commands.Cog):
                             inline=False)
             embed.add_field(name="{}zaproszenie".format(prefix), value="We no zaproś na serwerek",
                             inline=False)
-            embed.add_field(name="{}autor".format(prefix), value="Wpiszta by się dowiedzieć więcej o Stwórcy tego dzieła",
+            embed.add_field(name="{}autor".format(prefix),
+                            value="Wpiszta by się dowiedzieć więcej o Stwórcy tego dzieła",
                             inline=False)
             embed.add_field(name="{}info_bot".format(prefix), value="Informacje o mnie",
                             inline=False)
@@ -207,30 +208,130 @@ class Utilities(commands.Cog):
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         server_config = await cr.server_parameters[server_id].check_config()
-        if setting is None and switch is None:
+        prefix = await cr.server_parameters[server_id].get_prefix()
+
+        async def help():
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Ustawienia bota KBot {}".format(config.wersja))
+            embed.set_author(name="Ustawienia bota KBot {} na serwerze {}".format(config.wersja, ctx.guild.name))
             embed.add_field(name="Wymagana rola DJ: {}".format(
                 server_config["require_dj"]),
-                value="!settings dj <on/off>", inline=False
+                value="{}settings dj <on/off>".format(prefix), inline=False
             )
             embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
                 server_config["QSP"]),
-                value="!settings QSP <on/off>", inline=False
+                value="{}settings QSP <on/off>".format(prefix), inline=False
             )
             embed.add_field(name="Autorola: {}".format(
                 server_config["autorole"]),
-                value="!settings autorole <rola do przydzielenia>", inline=False
+                value="{}settings autorole <rola do przydzielenia/brak>".format(prefix), inline=False
             )
             embed.add_field(name="Symbol waluty: {}".format(
                 server_config["currency_symbol"]),
-                value="!settings curr_symbol <symbol>", inline=False
+                value="{}settings curr_symbol <symbol>".format(prefix), inline=False
             )
 
             await ctx.send(embed=embed)
+
+        if setting is None and switch is None:
+            await help()
+
+        elif setting == "dj":
+            if switch == "on":
+                setting_state = ("require_dj", "on")
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Wymaganie roli DJ pomyślnie włączone!")
+            elif switch == "off":
+                setting_state = ("require_dj", "off")
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Wymaganie roli DJ pomyślnie wyłączone!")
+            elif switch is None:
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Ustawienie parametru")
+                embed.add_field(name="Wymagana rola DJ: {}".format(
+                                server_config["require_dj"]),
+                                value="{}settings dj <on/off>".format(prefix), inline=False)
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+
+        elif setting == "QSP":
+            if switch == "on":
+                setting_state = ("QSP", True)
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Zapobieganie duplikacji pieśni w kolejce pomyślnie włączone!")
+            elif switch == "off":
+                setting_state = ("QSP", False)
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Zapobieganie duplikacji pieśni w kolejce pomyślnie wyłączone!")
+            elif switch is None:
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Ustawienie parametru")
+                embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
+                    server_config["QSP"]),
+                    value="{}settings QSP <on/off>".format(prefix), inline=False)
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+
+        elif setting == "autorole":
+            # TODO: Zamiana parametru on na konkretną rolę na serwerze
+            if switch == "on":
+                setting_state = ("autorole", "on")
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Autorola pomyślnie ustawiona!")
+            elif switch == "brak":
+                setting_state = ("autorole", None)
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Autorola pomyślnie wyłączona!")
+            elif switch is None:
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Ustawienie parametru")
+                embed.add_field(name="Autorola: {}".format(
+                                server_config["autorole"]),
+                                value="{}settings autorole <rola do przydzielenia/brak>".format(prefix), inline=False)
+
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+
+        elif setting == "curr_symbol":
+            if switch is not None and len(switch) <= 5:
+                setting_state = ("currency_symbol", switch)
+                await cr.server_parameters[server_id].change_config(setting_state)
+                await ctx.send("Symbol waluty pomyślnie zmieniony!")
+            elif switch is None:
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Ustawienie parametru")
+                embed.add_field(name="Symbol waluty: {}".format(
+                                server_config["currency_symbol"]),
+                                value="{}settings curr_symbol <symbol>".format(prefix), inline=False)
+
+                await ctx.send(embed=embed)
+            else:
+                # noinspection PyTypeChecker
+                if len(switch) > 5:
+                    await ctx.send("Symbol jest za długi!")
+                else:
+                    await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+        else:
+            await help()
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

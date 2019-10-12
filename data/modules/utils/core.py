@@ -314,6 +314,13 @@ class GuildParameters(object):
             f.close()
         return config
 
+    async def change_config(self, setting: tuple):
+        config = await GuildParameters.check_config(self)
+        with open(self.filename, "w") as f:
+            config[setting[0]] = setting[1]
+            json.dump(config, f, indent=4)
+            f.close()
+
 class EcoMethods(object):
     def __init__(self, id):
         self.id = id
