@@ -35,7 +35,7 @@ async def on_connect():
         try:
             bot.load_extension(cog)
         except:
-            print("Nie udało się załadować rozszerzenia")
+            print("Nie udało się załadować rozszerzenia {}".format(cog))
 
 @bot.event
 async def on_ready():
