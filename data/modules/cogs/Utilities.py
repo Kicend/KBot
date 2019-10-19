@@ -13,7 +13,7 @@ class Utilities(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["pomocy"])
-    async def help(self, ctx, los=1):
+    async def help(self, ctx, decyzja="brak"):
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_parameters:
@@ -21,13 +21,14 @@ class Utilities(commands.Cog):
         prefix = await cr.server_parameters[server_id].get_prefix()
 
         wersja = config.wersja
-        decyzja = int(los)
-        if decyzja == 1:
+        if not decyzja.isdigit():
+            decyzja = decyzja.lower()
+        if decyzja == "1" or decyzja == "muzyka":
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/4)".format(wersja))
+            embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/5)".format(wersja))
             embed.add_field(name="{}wkrocz [nazwa kanału]".format(prefix), value="Wkracza z buta na czat głosowy",
                             inline=False)
             embed.add_field(name="{}strumykuj <url>".format(prefix), value="Strumykuj z interneta pieśni",
@@ -55,12 +56,31 @@ class Utilities(commands.Cog):
 
             await ctx.send(embed=embed)
 
-        elif decyzja == 2:
+        elif decyzja == "2" or decyzja == "ekonomia":
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 2/4)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 2/5)".format(wersja))
+            embed.add_field(name="{}przelej <użytkownik> <ilość pieniędzy>".format(prefix),
+                            value="Przelej pieniądze komuś", inline=False)
+            embed.add_field(name="{}stan_konta [użytkownik]".format(prefix),
+                            value="Sprawdź swój lub czyiś stan konta", inline=False)
+            embed.add_field(name="{}dodaj_pieniądze <użytkownik> <ilość pieniędzy>".format(prefix),
+                            value="Dodrukuj pieniądze", inline=False)
+            embed.add_field(name="{}reset_ekonomii".format(prefix),
+                            value="Reset całej ekonomii", inline=False)
+            embed.add_field(name="{}lista_kont".format(prefix),
+                            value="Wyświetl listę krezusów", inline=False)
+
+            await ctx.send(embed=embed)
+
+        elif decyzja == "3" or decyzja == "narzędzia":
+            embed = discord.Embed(
+                colour=discord.Colour.blue()
+            )
+
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 3/5)".format(wersja))
             embed.add_field(name="{}ping".format(prefix), value="Dowiedz się jak słabego mam neta",
                             inline=False)
             embed.add_field(name="{}zaproszenie".format(prefix), value="We no zaproś na serwerek",
@@ -79,12 +99,12 @@ class Utilities(commands.Cog):
 
             await ctx.send(embed=embed)
 
-        elif decyzja == 3:
+        elif decyzja == "4" or decyzja == "administracja":
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 3/4)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 4/5)".format(wersja))
             embed.add_field(name="{}kopnij".format(prefix), value="Kopnij w tyłek",
                             inline=False)
             embed.add_field(name="{}ukarz".format(prefix), value="Ukarz delikwenta na tułaczkę",
@@ -102,12 +122,12 @@ class Utilities(commands.Cog):
 
             await ctx.send(embed=embed)
 
-        elif decyzja == 4:
+        elif decyzja == "5" or decyzja == "rozrywka":
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 4/4)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 5/5)".format(wersja))
             embed.add_field(name="{}kostka <ile ścian (minimum 4)>".format(prefix),
                             value="Weźse wylosuj jakąś liczbunie szefuńciu", inline=False)
             embed.add_field(name="{}zapytaj <pytanie>".format(prefix), value="Zapytaj mnie o cokolwiek",
@@ -120,6 +140,20 @@ class Utilities(commands.Cog):
                             inline=False)
 
             await ctx.send(embed=embed)
+
+        else:
+            embed = discord.Embed(
+                colour=discord.Colour.blue()
+            )
+
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (wprowadzenie)".format(wersja))
+            embed.add_field(name="{}pomocy [kategoria]".format(prefix),
+                            value="Kategorie: 1 - Muzyka, 2 - Ekonomia, 3 - Narzędzia, 4 - Administracja, 5 - Rozrywka",
+                            inline=False)
+            await ctx.send(embed=embed)
+            await ctx.send("```"
+                           "Możesz używać zarówno liczb jak i nazw kategorii!"
+                           "```")
 
     @commands.command()
     async def autor(self, ctx):
@@ -339,6 +373,7 @@ class Utilities(commands.Cog):
                     await ctx.send("Symbol jest za długi!")
                 else:
                     await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+
         else:
             await help()
 
