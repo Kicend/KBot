@@ -34,6 +34,7 @@ class Music(commands.Cog):
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
+        server_config = await cr.server_parameters[server_id].check_config()
         if has_permission is True:
             if not url.count("https"):
                 await ctx.send("Wyszukiwanie muzyki zostało tymczasowo wyłączone. Przyjmowane są tylko adresy URL!")
@@ -46,8 +47,12 @@ class Music(commands.Cog):
                     asyncio.run(await cr.server_players[server_id].main(ctx))
                 else:
                     if url in cr.server_players[server_id].kolejka:
-                        await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
+                        url_in_queue = True
                     else:
+                        url_in_queue = False
+                    if server_config["QSP"] and url_in_queue is True:
+                        await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
+                    elif server_config["QSP"] is False or url_in_queue is False:
                         cr.server_players[server_id].kolejka.append(url)
                         dictMeta = cr.ytdl.extract_info(url, download=False)
                         title = dictMeta['title']
