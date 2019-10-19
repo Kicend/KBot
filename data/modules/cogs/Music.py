@@ -51,7 +51,7 @@ class Music(commands.Cog):
                     else:
                         url_in_queue = False
                     if server_config["QSP"] and url_in_queue is True:
-                        await ctx.send("Nie możesz poczekać? Po co druga taka sama piosenka w kolejce?")
+                        await ctx.send("Nie możesz poczekać? Po co kolejna taka sama piosenka w kolejce?")
                     elif server_config["QSP"] is False or url_in_queue is False:
                         cr.server_players[server_id].kolejka.append(url)
                         dictMeta = cr.ytdl.extract_info(url, download=False)
