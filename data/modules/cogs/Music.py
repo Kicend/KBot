@@ -115,12 +115,15 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if not cr.server_players[server_id].loop:
-                cr.server_players[server_id].loop = True
-                await ctx.send("Pieśń została zapętlona!")
+            if cr.server_players[server_id].gra:
+                if not cr.server_players[server_id].loop:
+                    cr.server_players[server_id].loop = True
+                    await ctx.send("Pieśń została zapętlona!")
+                else:
+                    cr.server_players[server_id].loop = False
+                    await ctx.send("Pieśń została odpętlona!")
             else:
-                cr.server_players[server_id].loop = False
-                await ctx.send("Pieśń została odpętlona!")
+                await ctx.send("Żadna pieśń nie jest w tej chwili odtwarzana!")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
 
@@ -159,8 +162,11 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            await cr.server_players[server_id].pause(ctx)
-            await ctx.send("Pieśń została zapauzowana")
+            if cr.server_players[server_id].gra:
+                await cr.server_players[server_id].pause(ctx)
+                await ctx.send("Pieśń została zapauzowana")
+            else:
+                await ctx.send("Żadna pieśń nie jest w tej chwili odtwarzana!")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
 
@@ -175,8 +181,11 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            await cr.server_players[server_id].resume(ctx)
-            await ctx.send("Pieśń została wznowiona")
+            if cr.server_players[server_id].gra:
+                await cr.server_players[server_id].resume(ctx)
+                await ctx.send("Pieśń została wznowiona")
+            else:
+                await ctx.send("Żadna pieśń nie jest w tej chwili odtwarzana!")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
 
@@ -222,7 +231,8 @@ class Music(commands.Cog):
             if cr.server_players[server_id].piosenki != []:
                 while cr.server_players[server_id].piosenki != []:
                     del cr.server_players[server_id].piosenki[0]
-            del cr.server_players[server_id].gra[0]
+            if cr.server_players[server_id].gra:
+                del cr.server_players[server_id].gra[0]
             del cr.server_players[server_id]
             await ctx.send("Pamięć podręczna została wyczyszczona")
         else:
