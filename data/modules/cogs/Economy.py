@@ -14,6 +14,9 @@ class Economy(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_economy:
             cr.server_economy[server_id] = cr.EcoMethods(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        server_config = await cr.server_parameters[server_id].check_config()
         if ctx.author.id == user.id:
             await ctx.send("Nie ma sensu dawać sobie pieniądze, przecież już je masz!")
         elif user.bot is True:
@@ -41,7 +44,8 @@ class Economy(commands.Cog):
                             sender, receiver, account_sender, account_receiver
                         )
                         await ctx.send("Transakcja wykonana pomyślnie!\n"
-                                       "Twój stan konta wynosi teraz {} $!".format(account_sender))
+                                       "Twój stan konta wynosi teraz {} {}!".format(
+                                        account_sender, server_config["currency_symbol"]))
 
     @commands.command(aliases=["stan_konta"])
     async def money(self, ctx, user: discord.User = None):
@@ -50,12 +54,15 @@ class Economy(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_economy:
             cr.server_economy[server_id] = cr.EcoMethods(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        server_config = await cr.server_parameters[server_id].check_config()
         if user is None or user.id == ctx.author.id:
             money = await cr.server_economy[server_id].check_account(str(ctx.author.id))
-            await ctx.send("Posiadasz {} $ na koncie".format(money))
+            await ctx.send("Posiadasz {} {} na koncie".format(money, server_config["currency_symbol"]))
         else:
             money = await cr.server_economy[server_id].check_account(str(user.id))
-            await ctx.send("{} posiada {} $ na koncie".format(user.name, money))
+            await ctx.send("{} posiada {} {} na koncie".format(user.name, money, server_config["currency_symbol"]))
 
     @commands.command(aliases=["dodaj_pieniądze"])
     @has_permissions(administrator=True)
@@ -65,6 +72,9 @@ class Economy(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_economy:
             cr.server_economy[server_id] = cr.EcoMethods(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        server_config = await cr.server_parameters[server_id].check_config()
         if user.bot is True:
             await ctx.send("Nie możesz dodać pieniędzy botu. Nie posiada konta bankowego!")
         elif amount <= 0:
@@ -78,11 +88,13 @@ class Economy(commands.Cog):
                 account_receiver = accounts[receiver] + amount
                 await cr.server_economy[server_id].add_money(receiver, account_receiver)
                 if user.id == ctx.author.id:
-                    await ctx.send("Dodałeś sobie {} $ na konto!\n"
-                                   "Twój stan konta wynosi teraz {} $!".format(amount, account_receiver))
+                    await ctx.send("Dodałeś sobie {0} {2} na konto!\n"
+                                   "Twój stan konta wynosi teraz {1} {2}!".format(
+                                   amount, account_receiver, server_config["currency_symbol"]))
                 else:
-                    await ctx.send("Dodałeś {} $ na konto użytkownika {}\n"
-                                   "Jego stan konta wynosi teraz {} $".format(amount, user.name, account_receiver))
+                    await ctx.send("Dodałeś {0} {3} na konto użytkownika {1}!\n"
+                                   "Jego stan konta wynosi teraz {2} {3}!".format(
+                                   amount, user.name, account_receiver, server_config["currency_symbol"]))
 
     @commands.command(aliases=["reset_ekonomii"])
     @has_permissions(administrator=True)
@@ -102,7 +114,10 @@ class Economy(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_economy:
             cr.server_economy[server_id] = cr.EcoMethods(server_id)
+        if server_id not in cr.server_parameters:
+            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         accounts = await cr.server_economy[server_id].check_accounts()
+        server_config = await cr.server_parameters[server_id].check_config()
         a = []
         for account in accounts:
             a.append((account, accounts[account]))
@@ -116,7 +131,7 @@ class Economy(commands.Cog):
         for liczba, account in enumerate(accounts_sorted):
             user = ctx.guild.get_member(int(account[0]))
             embed.add_field(name="Pozycja nr {}".format(liczba+1),
-                            value="{} - {} $".format(user, account[1]), inline=False)
+                            value="{} - {} {}".format(user, account[1], server_config["currency_symbol"]), inline=False)
         await ctx.send(embed=embed)
 
 def setup(bot):
