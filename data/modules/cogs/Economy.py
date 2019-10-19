@@ -9,6 +9,7 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=["przelej"])
     async def pay(self, ctx, user: discord.User, amount: int):
+        """Przelej pieniądze komuś"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_economy:
@@ -44,6 +45,7 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=["stan_konta"])
     async def money(self, ctx, user: discord.User = None):
+        """Sprawdź swój lub czyiś stan konta"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_economy:
@@ -58,6 +60,7 @@ class Economy(commands.Cog):
     @commands.command(aliases=["dodaj_pieniądze"])
     @has_permissions(administrator=True)
     async def add_money(self, ctx, user: discord.User, amount: int):
+        """Dodrukuj pieniądze"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_economy:
@@ -84,6 +87,7 @@ class Economy(commands.Cog):
     @commands.command(aliases=["reset_ekonomii"])
     @has_permissions(administrator=True)
     async def reset_eco(self, ctx):
+        """Reset całej ekonomii"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_economy:
@@ -93,6 +97,7 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=["lista_kont"])
     async def leaderboard(self, ctx):
+        """Wyświetl listę krezusów"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_economy:
