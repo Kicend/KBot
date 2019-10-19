@@ -74,8 +74,6 @@ class Utilities(commands.Cog):
                             inline=False)
             embed.add_field(name="{}użytkownik <nick, @nick lub id>".format(prefix),
                             value="Informacje o danym użytkowniku", inline=False)
-            embed.add_field(name="{}zmiana_prefixu <nowy prefix>".format(prefix), value="Zmiana prefixu bota",
-                            inline=False)
             embed.add_field(name="{}ustawienia".format(prefix), value="Panel Ustawień",
                             inline=False)
 
@@ -188,17 +186,6 @@ class Utilities(commands.Cog):
         """Komenda do uzyskiwania informacji o użytkowniku oznaczając go (@nick, nick lub id)"""
         await user(ctx, user_ext_info)
 
-    @commands.command(aliases=["zmiana_prefixu"])
-    @has_permissions(administrator=True)
-    async def change_prefix(self, ctx, prefix: str):
-        """Zmiana prefixu bota"""
-        server = self.bot.get_guild(ctx.guild.id)
-        server_id = server.id
-        if server_id not in cr.server_parameters:
-            cr.server_parameters[server_id] = cr.GuildParameters(server_id)
-
-        await cr.server_parameters[server_id].change_prefix(ctx, prefix)
-
     @commands.command(aliases=["ustawienia"])
     @has_permissions(administrator=True)
     async def settings(self, ctx, setting=None, switch=None):
@@ -223,6 +210,10 @@ class Utilities(commands.Cog):
             embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
                 server_config["QSP"]),
                 value="{}settings QSP <on/off>".format(prefix), inline=False
+            )
+            embed.add_field(name="Prefix: {}".format(
+                prefix),
+                value="{}settings prefix <nowy prefix>".format(prefix), inline=False
             )
             embed.add_field(name="Autorola: {}".format(
                 server_config["autorole"]),
@@ -283,6 +274,24 @@ class Utilities(commands.Cog):
                 await ctx.send(embed=embed)
             else:
                 await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
+
+        elif setting == "prefix":
+            new_prefix = str(switch)
+            if switch == prefix:
+                await ctx.send("Już jest ustawiony taki prefix!")
+            elif switch is None:
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Ustawienie parametru")
+                embed.add_field(name="Prefix: {}".format(
+                    prefix),
+                    value="{}settings prefix <nowy prefix>".format(prefix), inline=False)
+
+                await ctx.send(embed=embed)
+            else:
+                await cr.server_parameters[server_id].change_prefix(ctx, new_prefix)
 
         elif setting == "autorole":
             # TODO: Zamiana parametru on na konkretną rolę na serwerze
