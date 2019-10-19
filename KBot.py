@@ -26,7 +26,7 @@ bot = commands.Bot(command_prefix=get_prefix, description='KBot wersja {}'.forma
 
 bot.remove_command("help")
 
-status = ["KBot {}".format(config.wersja), "!pomocy <1-4>"]
+status = ["KBot {}".format(config.wersja), "!pomocy <1-5>"]
 
 @bot.event
 async def on_connect():
