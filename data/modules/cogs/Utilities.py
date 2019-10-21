@@ -313,6 +313,8 @@ class Utilities(commands.Cog):
             new_prefix = str(switch)
             if switch == prefix:
                 await ctx.send("Już jest ustawiony taki prefix!")
+            elif len(switch) > 5:
+                await ctx.send("Ten prefix jest za długi! Maksymalna długość prefixu to 5 znaków!")
             elif switch is None:
                 embed = discord.Embed(
                     colour=discord.Colour.blue()
