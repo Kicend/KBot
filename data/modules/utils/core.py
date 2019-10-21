@@ -130,12 +130,28 @@ class Player(object):
         ctx.voice_client.resume()
 
     async def konwerter(self, czas):
-        minuty = czas / 60
-        sekundy = czas % 60
-        if sekundy > 9:
-            return "{}:{}".format(int(round(minuty - 0.5, 0)), sekundy)
+        hours = 0
+        minutes = czas / 60
+        if minutes >= 60:
+            hours = minutes / 60
+            minutes = round(minutes - 0.5, 0) - 60
+            if hours < 1:
+                hours = 0
+        seconds = czas % 60
+        if seconds > 9 and hours == 0:
+            return "{}:{}".format(int(round(minutes - 0.5, 0)), seconds)
+        elif seconds <= 9 and minutes <= 59:
+            return "{}:0{}".format(int(round(minutes - 0.5, 0)), seconds)
+        elif seconds > 9 and minutes > 9 and hours != 0:
+            return "{}:{}:{}".format(int(round(hours - 0.5, 0)), int(round(minutes - 0.5, 0)), seconds)
+        elif seconds <= 9 and minutes > 9 and hours != 0:
+            return "{}:{}:0{}".format(int(round(hours - 0.5, 0)), int(round(minutes - 0.5, 0)), seconds)
+        elif seconds > 9 and minutes < 9 and hours != 0:
+            return "{}:0{}:{}".format(int(round(hours - 0.5, 0)), int(round(minutes - 0.5, 0)), seconds)
+        elif seconds < 9 and minutes < 9 and hours != 0:
+            return "{}:0{}:0{}".format(int(round(hours - 0.5, 0)), int(round(minutes - 0.5, 0)), seconds)
         else:
-            return "{}:0{}".format(int(round(minuty - 0.5, 0)), sekundy)
+            return "**BŁĄD**: Konwerter nie mógł przeliczyć podanego czasu"
 
     async def current_time(self, czas: int):
         while self.now <= czas:
