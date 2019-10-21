@@ -135,12 +135,18 @@ class Player(object):
         if minutes >= 60:
             hours = minutes / 60
             minutes = round(minutes - 0.5, 0) - 60
+            if minutes == 60:
+                minutes = 0
             if hours < 1:
                 hours = 0
         seconds = czas % 60
+        if minutes == 1:
+            minutes += 0.1
+        if hours == 1:
+            hours += 0.1
         if seconds > 9 and hours == 0:
             return "{}:{}".format(int(round(minutes - 0.5, 0)), seconds)
-        elif seconds <= 9 and minutes <= 59:
+        elif seconds <= 9 and minutes <= 59 and hours < 1:
             return "{}:0{}".format(int(round(minutes - 0.5, 0)), seconds)
         elif seconds > 9 and minutes > 9 and hours != 0:
             return "{}:{}:{}".format(int(round(hours - 0.5, 0)), int(round(minutes - 0.5, 0)), seconds)
