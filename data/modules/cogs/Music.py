@@ -150,7 +150,10 @@ class Music(commands.Cog):
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=cr.server_players[server_id].gra[0], inline=False)
-            embed.add_field(name="Czas:", value="{}/{}".format(str(await cr.server_players[server_id].konwerter(cr.server_players[server_id].now)), str(await cr.server_players[server_id].konwerter(czas))), inline=False)
+            embed.add_field(name="Czas:", value="{}/{}".format(
+                            str(await cr.server_players[server_id].konwerter(cr.server_players[server_id].now)),
+                            str(await cr.server_players[server_id].konwerter(czas))), inline=False
+                            )
 
             await ctx.send(embed=embed)
         else:
