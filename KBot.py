@@ -60,7 +60,7 @@ async def on_guild_join(guild):
     await cr.server_economy[server_id].join_guild(guild, 0)
 
 @bot.event
-async def on_guild_leave(guild):
+async def on_guild_remove(guild):
     server_id = guild.id
     if server_id not in cr.server_parameters:
         cr.server_parameters[server_id] = cr.GuildParameters(server_id)

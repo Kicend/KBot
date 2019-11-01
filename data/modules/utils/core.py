@@ -281,17 +281,19 @@ class GuildParameters(object):
             with open(self.filename, "a+") as f:
                 json.dump(guild_parameters, f, indent=4)
                 f.close()
-        if not os.path.isfile(self.filename_prefixes):
-            with open(self.filename_prefixes, "a") as f:
-                json.dump(server_prefix, f, indent=4)
-                f.close()
+        with open(self.filename_prefixes, "a") as f:
+            json.dump(server_prefix, f, indent=4)
+            f.close()
 
     async def leave_guild(self):
         if os.path.isfile(self.filename):
             os.remove(self.filename)
-        with open(self.filename_prefixes, "r+") as f:
+        with open(self.filename_prefixes, "r") as f:
             prefixes = json.load(f)
+        with open(self.filename_prefixes, "w") as f:
             del prefixes[str(self.id)]
+            if prefixes:
+                json.dump(prefixes, f, indent=4)
             f.close()
 
     async def get_prefix(self):
@@ -347,7 +349,7 @@ class EcoMethods(object):
     def __init__(self, id):
         self.id = id
         self.members_accounts = EcoMethods.check_accounts(self)
-        self.eco_filname = "data/eco_db/{}.json".format(self.id)
+        self.eco_filename = "data/eco_db/{}.json".format(self.id)
 
     async def join_guild(self, guild: discord.Guild, i: int):
         members_list = guild.members
@@ -357,40 +359,40 @@ class EcoMethods(object):
             if member.bot is False:
                 members_accounts[str(member.id)] = 0
         if i == 0:
-            with open(self.eco_filname, "a") as f:
+            with open(self.eco_filename, "a") as f:
                 json.dump(members_accounts, f, indent=4)
                 f.close()
         else:
-            with open(self.eco_filname, "w") as f:
+            with open(self.eco_filename, "w") as f:
                 json.dump(members_accounts, f, indent=4)
                 f.close()
 
     async def check_accounts(self):
-        with open(self.eco_filname, "r") as f:
+        with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
             f.close()
         return accounts
 
     async def check_account(self, user_account: str):
-        with open(self.eco_filname, "r") as f:
+        with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
             f.close()
         money = accounts[user_account]
         return money
 
     async def money_transfer(self, sender_id: str, receiver_id: str, account_sender: int, account_receiver: int):
-        with open(self.eco_filname, "r") as f:
+        with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
-        with open(self.eco_filname, "w") as f:
+        with open(self.eco_filename, "w") as f:
             accounts[sender_id] = account_sender
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
             f.close()
 
     async def add_money(self, receiver_id: str , account_receiver: int):
-        with open(self.eco_filname, "r") as f:
+        with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
-        with open(self.eco_filname, "w") as f:
+        with open(self.eco_filename, "w") as f:
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
             f.close()
