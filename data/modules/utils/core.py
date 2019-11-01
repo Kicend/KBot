@@ -273,6 +273,7 @@ class GuildParameters(object):
         self.require_dj = None
         self.filename = "data/settings/servers_settings/{}.json".format(self.id)
         self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
+        self.eco_filename = "data/eco_db/{}.json".format(self.id)
 
     async def join_guild(self):
         guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
@@ -288,6 +289,8 @@ class GuildParameters(object):
     async def leave_guild(self):
         if os.path.isfile(self.filename):
             os.remove(self.filename)
+        if os.path.isfile(self.eco_filename):
+            os.remove(self.eco_filename)
         with open(self.filename_prefixes, "r") as f:
             prefixes = json.load(f)
         with open(self.filename_prefixes, "w") as f:
@@ -365,6 +368,22 @@ class EcoMethods(object):
         else:
             with open(self.eco_filename, "w") as f:
                 json.dump(members_accounts, f, indent=4)
+                f.close()
+
+    async def modify_eco_filename(self, member: discord.User, i: int):
+        with open(self.eco_filename, "r") as f:
+            members_accounts = json.load(f)
+        if i == 0:
+            if member.bot is False:
+                with open(self.eco_filename, "w") as f:
+                    members_accounts[str(member.id)] = 0
+                    json.dump(members_accounts, f, indent=4)
+                    f.close()
+        else:
+            with open(self.eco_filename, "w") as f:
+                del members_accounts[str(member.id)]
+                if members_accounts:
+                    json.dump(members_accounts, f, indent=4)
                 f.close()
 
     async def check_accounts(self):

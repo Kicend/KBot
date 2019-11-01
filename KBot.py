@@ -68,6 +68,22 @@ async def on_guild_remove(guild):
     await cr.server_parameters[server_id].leave_guild()
 
 @bot.event
+async def on_member_join(member):
+    server_id = member.guild.id
+    if server_id not in cr.server_economy:
+        cr.server_economy[server_id] = cr.EcoMethods(server_id)
+
+    await cr.server_economy[server_id].modify_eco_filename(member, 0)
+
+@bot.event
+async def on_member_remove(member):
+    server_id = member.guild.id
+    if server_id not in cr.server_economy:
+        cr.server_economy[server_id] = cr.EcoMethods(server_id)
+
+    await cr.server_economy[server_id].modify_eco_filename(member, 1)
+
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         await ctx.send("Nie podałeś wymaganego argumentu")
