@@ -68,6 +68,8 @@ class Utilities(commands.Cog):
                             value="Sprawdź swój lub czyiś stan konta", inline=False)
             embed.add_field(name="{}dodaj_pieniądze <użytkownik> <ilość pieniędzy>".format(prefix),
                             value="Dodrukuj pieniądze", inline=False)
+            embed.add_field(name="{}spal_pieniądze <użytkownik> <ilość pieniędzy>".format(prefix),
+                            value="Spal nadmiar pieniędzy", inline=False)
             embed.add_field(name="{}reset_ekonomii".format(prefix),
                             value="Reset całej ekonomii", inline=False)
             embed.add_field(name="{}lista_kont".format(prefix),
