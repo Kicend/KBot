@@ -93,7 +93,7 @@ class Economy(commands.Cog):
                                    amount, account_receiver, server_config["currency_symbol"]))
                 else:
                     await ctx.send("Dodałeś {0} {3} na konto użytkownika {1}!\n"
-                                   "Jego stan konta wynosi teraz {2} {3}!".format(
+                                   "Jego/Jej stan konta wynosi teraz {2} {3}!".format(
                                    amount, user.name, account_receiver, server_config["currency_symbol"]))
 
     @commands.command(aliases=["reset_ekonomii"])
