@@ -408,7 +408,7 @@ class EcoMethods(object):
             json.dump(accounts, f, indent=4)
             f.close()
 
-    async def add_money(self, receiver_id: str , account_receiver: int):
+    async def change_money(self, receiver_id: str , account_receiver: int):
         with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
         with open(self.eco_filename, "w") as f:
