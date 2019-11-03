@@ -41,6 +41,8 @@ async def on_connect():
 async def on_ready():
     print('Zalogowany jako {0} ({0.id})'.format(bot.user))
     print('----------------------------------------------')
+    for guild in bot.guilds:
+        print("{} ID: {}".format(guild.name, guild.id))
     msgs = cycle(status)
     while not bot.is_closed():
         current_status = next(msgs)
