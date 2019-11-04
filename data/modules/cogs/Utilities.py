@@ -269,10 +269,12 @@ class Utilities(commands.Cog):
             if switch == "on":
                 setting_state = ("require_dj", "on")
                 await cr.server_parameters[server_id].change_config(setting_state)
+                cr.server_parameters[server_id].require_dj = "on"
                 await ctx.send("Wymaganie roli DJ pomyślnie włączone!")
             elif switch == "off":
                 setting_state = ("require_dj", "off")
                 await cr.server_parameters[server_id].change_config(setting_state)
+                cr.server_parameters[server_id].require_dj = "off"
                 await ctx.send("Wymaganie roli DJ pomyślnie wyłączone!")
             elif switch is None:
                 embed = discord.Embed(
