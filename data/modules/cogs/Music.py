@@ -83,13 +83,13 @@ class Music(commands.Cog):
                     cr.server_players[server_id].vote_switch = 0
                     await cr.server_players[server_id].vote_list_clear()
                 asyncio.run(await cr.server_players[server_id].main(ctx))
-        else:
+        elif has_permission is False:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
             if cr.server_players[server_id].kolejka != []:
                 await cr.server_players[server_id].vote_system(ctx)
-            else:
-                await ctx.send("Brak pieśni w kolejce")
+        else:
+            await ctx.send("Brak pieśni w kolejce")
 
     @commands.command(aliases=["adminskip"])
     @has_permissions(administrator=True)
@@ -108,6 +108,28 @@ class Music(commands.Cog):
                 cr.server_players[server_id].vote_switch = 0
                 await cr.server_players[server_id].vote_list_clear()
             asyncio.run(await cr.server_players[server_id].main(ctx))
+
+    @commands.command(aliases=["cofnij_głos"])
+    async def unvote(self, ctx):
+        """Cofnij głos"""
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_players:
+            cr.server_players[server_id] = cr.Player(server_id)
+        if cr.server_players[server_id].vote_switch == 1:
+            if ctx.author in cr.server_players[server_id].voters:
+                cr.server_players[server_id].voters.remove(ctx.author)
+                await ctx.send("Pomyślnie wycofałeś swój głos!")
+                if cr.server_players[server_id].voters:
+                    await ctx.send("```Zagłosowało {}/{}```".format(len(cr.server_players[server_id].voters),
+                                                                    cr.server_players[server_id].voters_count - 1))
+                else:
+                    cr.server_players[server_id].vote_switch = 0
+                    await ctx.send("```Głosowanie za pominięciem zostało anulowane!```")
+            else:
+                await ctx.send("Nie zagłosowałeś wcześniej lub wycowałeś swój głos!")
+        else:
+            await ctx.send("Obecnie nie trwa żadne głosowanie!")
 
     @commands.command(aliases=["pętla"])
     async def loop(self, ctx):
