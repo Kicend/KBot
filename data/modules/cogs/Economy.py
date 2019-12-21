@@ -90,11 +90,11 @@ class Economy(commands.Cog):
                 if user.id == ctx.author.id:
                     await ctx.send("Dodałeś sobie {0} {2} na konto!\n"
                                    "Twój stan konta wynosi teraz {1} {2}!".format(
-                                   amount, account_receiver, server_config["currency_symbol"]))
+                                    amount, account_receiver, server_config["currency_symbol"]))
                 else:
                     await ctx.send("Dodałeś {0} {3} na konto użytkownika {1}!\n"
                                    "Jego/Jej stan konta wynosi teraz {2} {3}!".format(
-                                   amount, user.name, account_receiver, server_config["currency_symbol"]))
+                                    amount, user.name, account_receiver, server_config["currency_symbol"]))
 
     @commands.command(aliases=["spal_pieniądze"])
     @has_permissions(administrator=True)
@@ -122,11 +122,11 @@ class Economy(commands.Cog):
                 if user.id == ctx.author.id:
                     await ctx.send("Odjąłeś sobie {0} {2} z konta!\n"
                                    "Twój stan konta wynosi teraz {1} {2}!".format(
-                                   amount, account_receiver, server_config["currency_symbol"]))
+                                    amount, account_receiver, server_config["currency_symbol"]))
                 else:
                     await ctx.send("Odjąłeś {0} {3} z konta użytkownika {1}!\n"
                                    "Jego/Jej stan konta wynosi teraz {2} {3}!".format(
-                                   amount, user.name, account_receiver, server_config["currency_symbol"]))
+                                    amount, user.name, account_receiver, server_config["currency_symbol"]))
 
     @commands.command(aliases=["reset_ekonomii"])
     @has_permissions(administrator=True)
