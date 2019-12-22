@@ -84,7 +84,7 @@ class Player(object):
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
             dictMeta = ytdl.extract_info(url, download=False)
             duration = dictMeta['duration']
-            if self.piosenki != []:
+            if self.piosenki:
                 del self.piosenki[0]
             await Player.current_time(self, duration)
             if self.loop:
@@ -92,7 +92,7 @@ class Player(object):
             del self.gra[0]
             if self.vote_switch == 1:
                 self.vote_switch = 0
-                while self.voters != []:
+                while self.voters:
                     del self.voters[0]
                 await ctx.send("{}".format(communicates_PL.communicates.get(0)))
             if self.gra == [] and self.kolejka == []:
@@ -167,7 +167,7 @@ class Player(object):
                 self.now = self.save_time
 
     async def vote_list_clear(self):
-        while self.voters != []:
+        while self.voters:
             del self.voters[0]
 
     async def vote_system(self, ctx):
@@ -221,7 +221,7 @@ class Tools(object):
 
         embed.set_author(name="Lista skazanych")
 
-        if self.ban_users != []:
+        if self.ban_users:
             for liczba, user in enumerate(self.ban_users):
                 liczba = liczba + 1
                 embed.add_field(name="Skazany nr {}".format(liczba), value=user, inline=False)
@@ -408,7 +408,7 @@ class EcoMethods(object):
             json.dump(accounts, f, indent=4)
             f.close()
 
-    async def change_money(self, receiver_id: str , account_receiver: int):
+    async def change_money(self, receiver_id: str, account_receiver: int):
         with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
         with open(self.eco_filename, "w") as f:
