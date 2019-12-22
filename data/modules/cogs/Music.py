@@ -163,7 +163,7 @@ class Music(commands.Cog):
             cr.server_players[server_id] = cr.Player(server_id)
         if cr.server_players[server_id].gra:
             dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].gra[0], download=False)
-            czas = dictMeta['duration']
+            time = dictMeta['duration']
 
             embed = discord.Embed(
                 colour=discord.Colour.blue()
@@ -173,8 +173,8 @@ class Music(commands.Cog):
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
             embed.add_field(name="URL:", value=cr.server_players[server_id].gra[0], inline=False)
             embed.add_field(name="Czas:", value="{}/{}".format(
-                            str(await cr.server_players[server_id].konwerter(cr.server_players[server_id].now)),
-                            str(await cr.server_players[server_id].konwerter(czas))), inline=False
+                            str(await cr.server_players[server_id].converter(cr.server_players[server_id].now)),
+                            str(await cr.server_players[server_id].converter(time))), inline=False
                             )
 
             await ctx.send(embed=embed)

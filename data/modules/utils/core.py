@@ -59,6 +59,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Player(object):
     def __init__(self, id):
         self.now = 0
+        self.save_time = 0
         self.id = id
         self.kolejka = []
         self.piosenki = []
@@ -129,9 +130,10 @@ class Player(object):
         self.is_paused = 0
         ctx.voice_client.resume()
 
-    async def konwerter(self, czas):
+    @staticmethod
+    async def converter(time):
         hours = 0
-        minutes = czas / 60
+        minutes = time / 60
         if minutes >= 60:
             hours = minutes / 60
             minutes = round(minutes - 0.5, 0) - 60
@@ -139,7 +141,7 @@ class Player(object):
                 minutes = 0
             if hours < 1:
                 hours = 0
-        seconds = czas % 60
+        seconds = time % 60
         if minutes == 1:
             minutes += 0.1
         if hours == 1:
@@ -159,8 +161,8 @@ class Player(object):
         else:
             return "**BŁĄD**: Konwerter nie mógł przeliczyć podanego czasu"
 
-    async def current_time(self, czas: int):
-        while self.now <= czas:
+    async def current_time(self, time: int):
+        while self.now <= time:
             self.now += 1
             await asyncio.sleep(1)
             if self.is_paused == 1:
