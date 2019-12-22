@@ -3,7 +3,7 @@ import discord
 import json
 from discord.ext import commands
 from itertools import cycle
-from data.modules.utils import startup as up
+from data.modules.utils import startup
 
 # Importowanie rdzenia
 from data.modules.utils import core as cr
@@ -42,7 +42,7 @@ async def on_connect():
 async def on_ready():
     print('Zalogowany jako {0} ({0.id})'.format(bot.user))
     print('----------------------------------------------')
-    await up.guild_check(bot)
+    await startup.guild_check(bot)
     for guild in bot.guilds:
         print("{} ID: {}".format(guild.name, guild.id))
     msgs = cycle(status)
