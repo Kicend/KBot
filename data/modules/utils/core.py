@@ -4,6 +4,7 @@ import json
 import os
 import youtube_dl
 from data.lang.pl_PL import communicates_PL
+from data.modules.utils import constant as const
 
 server_players = {}
 server_tools = {}
@@ -273,9 +274,9 @@ class GuildParameters(object):
     def __init__(self, id):
         self.id = id
         self.require_dj = None
-        self.filename = "data/settings/servers_settings/{}.json".format(self.id)
-        self.filename_prefixes = "data/settings/servers_prefixes/prefixes.json"
-        self.eco_filename = "data/eco_db/{}.json".format(self.id)
+        self.filename = const.SERVERS_SETTINGS_FILES + "/{}.json".format(self.id)
+        self.filename_prefixes = const.SERVERS_PREFIXES_FILE
+        self.eco_filename = const.SERVERS_ECO_DB + "/{}.json".format(self.id)
 
     async def join_guild(self):
         guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
@@ -301,13 +302,11 @@ class GuildParameters(object):
             del prefixes[str(self.id)]
             if prefixes:
                 json.dump(prefixes, f, indent=4)
-            f.close()
 
     async def get_prefix(self):
         with open(self.filename_prefixes, "r") as f:
             prefixes = json.load(f)
             server_prefix = prefixes[str(self.id)]
-            f.close()
         return server_prefix
 
     async def change_prefix(self, ctx, prefix: str):
@@ -317,7 +316,6 @@ class GuildParameters(object):
             with open(self.filename_prefixes, "w") as f:
                 prefixes[str(self.id)] = prefix
                 json.dump(prefixes, f, indent=4)
-                f.close()
                 await ctx.send("Prefix został pomyślnie zmieniony na '{}'".format(prefix))
 
     async def check_permissions(self, ctx, role: str):
@@ -325,7 +323,6 @@ class GuildParameters(object):
             with open(self.filename, "r") as f:
                 guild_parameters = json.load(f)
                 self.require_dj = guild_parameters["require_dj"]
-                f.close()
         if self.require_dj == "on":
             user_ext_info: discord.Member = ctx.author
             role = discord.utils.get(ctx.guild.roles, name=role)
@@ -342,7 +339,6 @@ class GuildParameters(object):
     async def check_config(self):
         with open(self.filename, "r") as f:
             config = json.load(f)
-            f.close()
         return config
 
     async def change_config(self, setting: tuple):
@@ -350,13 +346,12 @@ class GuildParameters(object):
         with open(self.filename, "w") as f:
             config[setting[0]] = setting[1]
             json.dump(config, f, indent=4)
-            f.close()
 
 class EcoMethods(object):
     def __init__(self, id):
         self.id = id
         self.members_accounts = EcoMethods.check_accounts(self)
-        self.eco_filename = "data/eco_db/{}.json".format(self.id)
+        self.eco_filename = const.SERVERS_ECO_DB + "/{}.json".format(self.id)
 
     async def join_guild(self, guild: discord.Guild, i: int):
         members_list = guild.members
@@ -368,11 +363,9 @@ class EcoMethods(object):
         if i == 0:
             with open(self.eco_filename, "a") as f:
                 json.dump(members_accounts, f, indent=4)
-                f.close()
         else:
             with open(self.eco_filename, "w") as f:
                 json.dump(members_accounts, f, indent=4)
-                f.close()
 
     async def modify_eco_filename(self, member: discord.User, i: int):
         with open(self.eco_filename, "r") as f:
@@ -382,24 +375,20 @@ class EcoMethods(object):
                 with open(self.eco_filename, "w") as f:
                     members_accounts[str(member.id)] = 0
                     json.dump(members_accounts, f, indent=4)
-                    f.close()
         else:
             with open(self.eco_filename, "w") as f:
                 del members_accounts[str(member.id)]
                 if members_accounts:
                     json.dump(members_accounts, f, indent=4)
-                f.close()
 
     async def check_accounts(self):
         with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
-            f.close()
         return accounts
 
     async def check_account(self, user_account: str):
         with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
-            f.close()
         money = accounts[user_account]
         return money
 
@@ -410,7 +399,6 @@ class EcoMethods(object):
             accounts[sender_id] = account_sender
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
-            f.close()
 
     async def change_money(self, receiver_id: str, account_receiver: int):
         with open(self.eco_filename, "r") as f:
@@ -418,7 +406,6 @@ class EcoMethods(object):
         with open(self.eco_filename, "w") as f:
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
-            f.close()
 
 # TODO: Scalenie funkcji check_accounts i check_account w jedną
 
