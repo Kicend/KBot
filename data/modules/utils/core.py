@@ -279,14 +279,16 @@ class GuildParameters(object):
 
     async def join_guild(self):
         guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
-        server_prefix = {str(self.id): "!"}
+        server_prefix = "!"
         if not os.path.isfile(self.filename):
             with open(self.filename, "a+") as f:
                 json.dump(guild_parameters, f, indent=4)
-                f.close()
-        with open(self.filename_prefixes, "a") as f:
-            json.dump(server_prefix, f, indent=4)
-            f.close()
+        with open(self.filename_prefixes, "r") as f:
+            server_prefixes = json.dump(server_prefix, f, indent=4)
+        if not str(self.id) in server_prefixes.keys():
+            with open(self.filename_prefixes, "w") as f:
+                server_prefixes[str(self.id)] = server_prefix
+                json.dump(server_prefixes, f, indent=4)
 
     async def leave_guild(self):
         if os.path.isfile(self.filename):
