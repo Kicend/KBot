@@ -158,7 +158,7 @@ class Utilities(commands.Cog):
                            "```")
 
     @commands.command()
-    async def autor(self, ctx):
+    async def author(self, ctx):
         await autor(ctx)
 
     @commands.command(aliases=["zaproszenie"])
@@ -233,7 +233,7 @@ class Utilities(commands.Cog):
         server_config = await cr.server_parameters[server_id].check_config()
         prefix = await cr.server_parameters[server_id].get_prefix()
 
-        async def help():
+        async def help_menu():
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
@@ -263,7 +263,7 @@ class Utilities(commands.Cog):
             await ctx.send(embed=embed)
 
         if setting is None and switch is None:
-            await help()
+            await help_menu()
 
         elif setting == "dj":
             if switch == "on":
@@ -381,7 +381,7 @@ class Utilities(commands.Cog):
                     await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
 
         else:
-            await help()
+            await help_menu()
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

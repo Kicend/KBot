@@ -59,6 +59,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Player(object):
     def __init__(self, id):
         self.now = 0
+        self.save_time = 0
         self.id = id
         self.kolejka = []
         self.piosenki = []
@@ -84,7 +85,7 @@ class Player(object):
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
             dictMeta = ytdl.extract_info(url, download=False)
             duration = dictMeta['duration']
-            if self.piosenki != []:
+            if self.piosenki:
                 del self.piosenki[0]
             await Player.current_time(self, duration)
             if self.loop:
@@ -92,7 +93,7 @@ class Player(object):
             del self.gra[0]
             if self.vote_switch == 1:
                 self.vote_switch = 0
-                while self.voters != []:
+                while self.voters:
                     del self.voters[0]
                 await ctx.send("{}".format(communicates_PL.communicates.get(0)))
             if self.gra == [] and self.kolejka == []:
@@ -129,9 +130,10 @@ class Player(object):
         self.is_paused = 0
         ctx.voice_client.resume()
 
-    async def konwerter(self, czas):
+    @staticmethod
+    async def converter(time):
         hours = 0
-        minutes = czas / 60
+        minutes = time / 60
         if minutes >= 60:
             hours = minutes / 60
             minutes = round(minutes - 0.5, 0) - 60
@@ -139,7 +141,7 @@ class Player(object):
                 minutes = 0
             if hours < 1:
                 hours = 0
-        seconds = czas % 60
+        seconds = time % 60
         if minutes == 1:
             minutes += 0.1
         if hours == 1:
@@ -159,15 +161,15 @@ class Player(object):
         else:
             return "**BŁĄD**: Konwerter nie mógł przeliczyć podanego czasu"
 
-    async def current_time(self, czas: int):
-        while self.now <= czas:
+    async def current_time(self, time: int):
+        while self.now <= time:
             self.now += 1
             await asyncio.sleep(1)
             if self.is_paused == 1:
                 self.now = self.save_time
 
     async def vote_list_clear(self):
-        while self.voters != []:
+        while self.voters:
             del self.voters[0]
 
     async def vote_system(self, ctx):
@@ -221,7 +223,7 @@ class Tools(object):
 
         embed.set_author(name="Lista skazanych")
 
-        if self.ban_users != []:
+        if self.ban_users:
             for liczba, user in enumerate(self.ban_users):
                 liczba = liczba + 1
                 embed.add_field(name="Skazany nr {}".format(liczba), value=user, inline=False)
@@ -277,14 +279,16 @@ class GuildParameters(object):
 
     async def join_guild(self):
         guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
-        server_prefix = {str(self.id): "!"}
+        server_prefix = "!"
         if not os.path.isfile(self.filename):
             with open(self.filename, "a+") as f:
                 json.dump(guild_parameters, f, indent=4)
-                f.close()
-        with open(self.filename_prefixes, "a") as f:
-            json.dump(server_prefix, f, indent=4)
-            f.close()
+        with open(self.filename_prefixes, "r") as f:
+            server_prefixes = json.dump(server_prefix, f, indent=4)
+        if not str(self.id) in server_prefixes.keys():
+            with open(self.filename_prefixes, "w") as f:
+                server_prefixes[str(self.id)] = server_prefix
+                json.dump(server_prefixes, f, indent=4)
 
     async def leave_guild(self):
         if os.path.isfile(self.filename):
@@ -408,7 +412,7 @@ class EcoMethods(object):
             json.dump(accounts, f, indent=4)
             f.close()
 
-    async def change_money(self, receiver_id: str , account_receiver: int):
+    async def change_money(self, receiver_id: str, account_receiver: int):
         with open(self.eco_filename, "r") as f:
             accounts = json.load(f)
         with open(self.eco_filename, "w") as f:
