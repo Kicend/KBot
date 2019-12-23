@@ -19,9 +19,8 @@ async def guild_check(bot):
 
 def add_guild_config(guild_id, mode: int):
     if mode == 0:
-        guild_parameters = {"require_dj": "off", "QSP": "on", "autorole": None, "currency_symbol": "$"}
         with open("data/settings/servers_settings/{}.json".format(guild_id), "a+") as s:
-            json.dump(guild_parameters, s, indent=4)
+            json.dump(const.DEFAULT_GUILD_PARAMETERS, s, indent=4)
 
     elif mode == 1:
         with open(const.SERVERS_PREFIXES_FILE, "r") as p:
