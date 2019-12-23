@@ -1,7 +1,7 @@
+import asyncio
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
-import asyncio
 from data.modules.utils import core as cr
 
 class Music(commands.Cog):

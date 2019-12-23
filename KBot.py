@@ -1,6 +1,6 @@
 import asyncio
-import discord
 import json
+import discord
 from discord.ext import commands
 from itertools import cycle
 from data.modules.utils import startup
