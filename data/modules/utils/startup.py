@@ -1,6 +1,6 @@
 import os
 import json
-from data.modules.utils import constant as const
+from data.settings.bot_basic_parameters import constant as const
 
 guild_list = []
 keys_to_delete = []
