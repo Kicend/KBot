@@ -23,11 +23,11 @@ def get_prefix(bot, message):
 
     return prefixes[str(message.guild.id)]
 
-bot = commands.Bot(command_prefix=get_prefix, description='KBot wersja {}'.format(config.wersja))
+bot = commands.Bot(command_prefix=get_prefix, description='KBot wersja {}'.format(config.version))
 
 bot.remove_command("help")
 
-status = ["KBot {}".format(config.wersja), "!pomocy <1-5>"]
+status = ["KBot {}".format(config.version), "!pomocy <1-5>"]
 
 @bot.event
 async def on_connect():
