@@ -407,8 +407,6 @@ class EcoMethods(object):
             accounts[receiver_id] = account_receiver
             json.dump(accounts, f, indent=4)
 
-# TODO: Scalenie funkcji check_accounts i check_account w jedną
-
 # Zbiór małych funkcji
 def sortSecond(value):
     return value[1]
