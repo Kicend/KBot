@@ -300,8 +300,8 @@ class Music(commands.Cog):
 
         embed.set_author(name="Kolejka bota KBot")
 
-        for liczba, piosenka in enumerate(cr.server_players[server_id].piosenki):
-            embed.add_field(name="{} - {}".format(liczba+1, piosenka), value="Piosenka nr {}".format(liczba+1),
+        for number, song in enumerate(cr.server_players[server_id].piosenki):
+            embed.add_field(name="{} - {}".format(number+1, song), value="Piosenka nr {}".format(number+1),
                             inline=False)
         if not cr.server_players[server_id].piosenki:
             await ctx.send("Kolejka jest pusta")
