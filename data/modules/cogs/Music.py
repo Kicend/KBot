@@ -288,7 +288,7 @@ class Music(commands.Cog):
             await ctx.send("Nie posiadasz roli DJ!")
 
     @commands.command(aliases=["kolejka"])
-    async def queue(self, ctx):
+    async def queue(self, ctx, page: int = 1):
         """Sprawdź zawartość kolejki"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
@@ -298,14 +298,27 @@ class Music(commands.Cog):
             colour=discord.Colour.blue()
         )
 
-        embed.set_author(name="Kolejka bota KBot")
+        length = len(cr.server_players[server_id].piosenki)
+        pages = round(length / 10 + 0.5, 0)
+        if length % 10 == 0 and length/10 % 2 != 0:
+            pages -= 1
 
-        for number, song in enumerate(cr.server_players[server_id].piosenki):
-            embed.add_field(name="{} - {}".format(number+1, song), value="Piosenka nr {}".format(number+1),
-                            inline=False)
-        if not cr.server_players[server_id].piosenki:
-            await ctx.send("Kolejka jest pusta")
+        if page > pages:
+            if not cr.server_players[server_id].piosenki:
+                await ctx.send("Kolejka jest pusta")
+            else:
+                await ctx.send("Nie ma tylu stron! Aktualnie jest {}".format(int(pages)))
         else:
+            if pages == 1:
+                embed.set_author(name="Kolejka bota KBot")
+            else:
+                embed.set_author(name="Kolejka bota KBot {}/{}".format(page, int(pages)))
+
+            for number, song in enumerate(cr.server_players[server_id].piosenki):
+                if page * 10 - 10 <= number <= page * 10 - 1:
+                    embed.add_field(name="Piosenka nr {}".format(number+1), value="{}".format(song),
+                                    inline=False)
+
             await ctx.send(embed=embed)
 
     @play.before_invoke
