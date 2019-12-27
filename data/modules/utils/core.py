@@ -210,7 +210,7 @@ class Tools(object):
         self.ban_users = []
         self.id = id
 
-    async def banlist_display(self, ctx):
+    async def banlist_display(self, ctx, page: int = 1):
         banned_users = await ctx.guild.bans()
 
         for ban_entry in banned_users:
@@ -222,15 +222,27 @@ class Tools(object):
             colour=discord.Colour.blue()
         )
 
-        embed.set_author(name="Lista skazanych")
+        length = len(banned_users)
+        pages = round(length / 10 + 0.5, 0)
+        if length % 10 == 0 and length/10 % 2 != 0:
+            pages -= 1
 
-        if self.ban_users:
-            for liczba, user in enumerate(self.ban_users):
-                liczba = liczba + 1
-                embed.add_field(name="Skazany nr {}".format(liczba), value=user, inline=False)
-            await ctx.send(embed=embed)
+        if page > pages:
+            if not self.ban_users:
+                await ctx.send("Lista skazanych jest pusta")
+            else:
+                await ctx.send("Nie ma tylu stron! Aktualnie jest {}".format(int(pages)))
         else:
-            await ctx.send("Lista skazanych jest pusta")
+            if pages == 1:
+                embed.set_author(name="Lista skazanych")
+            else:
+                embed.set_author(name="Lista skazanych {}/{}".format(page, int(pages)))
+
+            for number, user in enumerate(self.ban_users):
+                if page * 10 - 10 <= number <= page * 10 - 1:
+                    embed.add_field(name="Skazany nr {}".format(number+1), value=user, inline=False)
+
+            await ctx.send(embed=embed)
 
     async def banlist_refresh(self, ctx):
         banned_users = await ctx.guild.bans()
@@ -370,16 +382,16 @@ class EcoMethods(object):
     async def modify_eco_filename(self, member: discord.User, i: int):
         with open(self.eco_filename, "r") as f:
             members_accounts = json.load(f)
-        if i == 0:
-            if member.bot is False:
+        if member.bot is False:
+            if i == 0:
                 with open(self.eco_filename, "w") as f:
                     members_accounts[str(member.id)] = 0
                     json.dump(members_accounts, f, indent=4)
-        else:
-            with open(self.eco_filename, "w") as f:
-                del members_accounts[str(member.id)]
-                if members_accounts:
-                    json.dump(members_accounts, f, indent=4)
+            else:
+                with open(self.eco_filename, "w") as f:
+                    del members_accounts[str(member.id)]
+                    if members_accounts:
+                        json.dump(members_accounts, f, indent=4)
 
     async def check_accounts(self):
         with open(self.eco_filename, "r") as f:

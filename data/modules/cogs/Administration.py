@@ -38,14 +38,14 @@ class Administration(commands.Cog):
 
     @commands.command(aliases=["skazańcy"])
     @has_permissions(manage_guild=True)
-    async def banlist(self, ctx):
+    async def banlist(self, ctx, page: int = 1):
         """Lista skazańców"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_tools:
             cr.server_tools[server_id] = cr.Tools(server_id)
 
-        await cr.server_tools[server_id].banlist_display(ctx)
+        await cr.server_tools[server_id].banlist_display(ctx, page)
 
     @commands.command()
     @has_permissions(manage_messages=True)

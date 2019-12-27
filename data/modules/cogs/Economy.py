@@ -140,7 +140,7 @@ class Economy(commands.Cog):
         await ctx.send("Ekonomia została zresetowana!")
 
     @commands.command(aliases=["lista_kont"])
-    async def leaderboard(self, ctx):
+    async def leaderboard(self, ctx, page: int = 1):
         """Wyświetl listę krezusów"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
@@ -154,17 +154,33 @@ class Economy(commands.Cog):
         for account in accounts:
             a.append((account, accounts[account]))
         accounts_sorted = sorted(a, key=cr.sortSecond, reverse=True)
+
         embed = discord.Embed(
             colour=discord.Colour.blue()
         )
 
-        embed.set_author(name="Lista wszystkich kont na serwerze {}".format(ctx.guild.name))
+        length = len(accounts_sorted)
+        pages = round(length / 10 + 0.5, 0)
+        if length % 10 == 0 and length/10 % 2 != 0:
+            pages -= 1
 
-        for liczba, account in enumerate(accounts_sorted):
-            user = ctx.guild.get_member(int(account[0]))
-            embed.add_field(name="Pozycja nr {}".format(liczba+1),
-                            value="{} - {} {}".format(user, account[1], server_config["currency_symbol"]), inline=False)
-        await ctx.send(embed=embed)
+        if page > pages:
+            await ctx.send("Nie ma tylu stron! Aktualnie jest {}".format(int(pages)))
+        else:
+            if pages == 1:
+                embed.set_author(name="Lista wszystkich kont na serwerze {}".format(ctx.guild.name))
+            else:
+                embed.set_author(name="Lista wszystkich kont na serwerze {} {}/{}".format(
+                                ctx.guild.name, page, int(pages)))
+
+            for number, account in enumerate(accounts_sorted):
+                if page * 10 - 10 <= number <= page * 10 - 1:
+                    user = ctx.guild.get_member(int(account[0]))
+                    embed.add_field(name="Pozycja nr {}".format(number+1),
+                                    value="{} - {} {}".format(user, account[1], server_config["currency_symbol"]),
+                                    inline=False)
+
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Economy(bot))
