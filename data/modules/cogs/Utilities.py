@@ -1,9 +1,9 @@
+import psutil
+import os
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from data.settings.bot_basic_parameters import config
-import psutil
-import os
 from data.modules.Utilities.autor import autor
 from data.modules.Utilities.user import user
 from data.modules.utils import core as cr
@@ -20,7 +20,7 @@ class Utilities(commands.Cog):
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         prefix = await cr.server_parameters[server_id].get_prefix()
 
-        wersja = config.wersja
+        version = config.version
         if not decyzja.isdigit():
             decyzja = decyzja.lower()
         if decyzja == "1" or decyzja == "muzyka":
@@ -28,7 +28,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/5)".format(wersja))
+            embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/5)".format(version))
             embed.add_field(name="{}wkrocz [nazwa kanału]".format(prefix), value="Wkracza z buta na czat głosowy",
                             inline=False)
             embed.add_field(name="{}strumykuj <url>".format(prefix), value="Strumykuj z interneta pieśni",
@@ -61,7 +61,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 2/5)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 2/5)".format(version))
             embed.add_field(name="{}przelej <użytkownik> <ilość pieniędzy>".format(prefix),
                             value="Przelej pieniądze komuś", inline=False)
             embed.add_field(name="{}stan_konta [użytkownik]".format(prefix),
@@ -82,7 +82,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 3/5)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 3/5)".format(version))
             embed.add_field(name="{}ping".format(prefix), value="Dowiedz się jak słabego mam neta",
                             inline=False)
             embed.add_field(name="{}zaproszenie".format(prefix), value="We no zaproś na serwerek",
@@ -106,7 +106,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 4/5)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 4/5)".format(version))
             embed.add_field(name="{}kopnij".format(prefix), value="Kopnij w tyłek",
                             inline=False)
             embed.add_field(name="{}ukarz".format(prefix), value="Ukarz delikwenta na tułaczkę",
@@ -129,7 +129,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 5/5)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (strona 5/5)".format(version))
             embed.add_field(name="{}kostka <ile ścian (minimum 4)>".format(prefix),
                             value="Weźse wylosuj jakąś liczbunie szefuńciu", inline=False)
             embed.add_field(name="{}zapytaj <pytanie>".format(prefix), value="Zapytaj mnie o cokolwiek",
@@ -148,7 +148,7 @@ class Utilities(commands.Cog):
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Sekcja pomocy KBot wersja {} (wprowadzenie)".format(wersja))
+            embed.set_author(name="Sekcja pomocy KBot wersja {} (wprowadzenie)".format(version))
             embed.add_field(name="{}pomocy [kategoria]".format(prefix),
                             value="Kategorie: 1 - Muzyka, 2 - Ekonomia, 3 - Narzędzia, 4 - Administracja, 5 - Rozrywka",
                             inline=False)
@@ -182,7 +182,7 @@ class Utilities(commands.Cog):
         embed.add_field(name="Pomiar pulsu:", value="{} ms".format(round(self.bot.latency * 1000)), inline=False)
         embed.add_field(name="RAM:", value="{} MB".format(round(process.memory_info().rss / (1024 * 1024))),
                         inline=False)
-        embed.add_field(name="Wersja:", value=config.wersja, inline=False)
+        embed.add_field(name="Wersja:", value=config.version, inline=False)
         embed.add_field(name="Biblioteka", value="discord.py 1.2.3", inline=False)
         embed.add_field(name="Autor:", value="Kicend#2690", inline=False)
         await ctx.send(embed=embed)
@@ -224,7 +224,7 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=["ustawienia"])
     @has_permissions(administrator=True)
-    async def settings(self, ctx, setting=None, switch=None):
+    async def settings(self, ctx, setting: str = None, switch=None):
         """Panel Ustawień"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
@@ -232,13 +232,15 @@ class Utilities(commands.Cog):
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         server_config = await cr.server_parameters[server_id].check_config()
         prefix = await cr.server_parameters[server_id].get_prefix()
+        if setting is not None:
+            setting.lower()
 
         async def help_menu():
             embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Ustawienia bota KBot {} na serwerze {}".format(config.wersja, ctx.guild.name))
+            embed.set_author(name="Ustawienia bota KBot {} na serwerze {}".format(config.version, ctx.guild.name))
             embed.add_field(name="Wymagana rola DJ: {}".format(
                 server_config["require_dj"]),
                 value="{}settings dj <on/off>".format(prefix), inline=False
@@ -290,7 +292,7 @@ class Utilities(commands.Cog):
             else:
                 await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
 
-        elif setting == "QSP":
+        elif setting == "qsp":
             if switch == "on":
                 setting_state = ("QSP", True)
                 await cr.server_parameters[server_id].change_config(setting_state)

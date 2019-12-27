@@ -1,6 +1,6 @@
-from discord.ext import commands
 import asyncio
 import random
+from discord.ext import commands
 from data.modules.Entertainment.pkn import rsp
 from data.modules.Entertainment.coin import coin
 from data.modules.Entertainment.zapytaj import answers
