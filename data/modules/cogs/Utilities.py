@@ -224,7 +224,7 @@ class Utilities(commands.Cog):
 
     @commands.command(aliases=["ustawienia"])
     @has_permissions(administrator=True)
-    async def settings(self, ctx, setting=None, switch=None):
+    async def settings(self, ctx, setting: str = None, switch=None):
         """Panel Ustawień"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
@@ -232,6 +232,8 @@ class Utilities(commands.Cog):
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         server_config = await cr.server_parameters[server_id].check_config()
         prefix = await cr.server_parameters[server_id].get_prefix()
+        if setting is not None:
+            setting.lower()
 
         async def help_menu():
             embed = discord.Embed(
@@ -290,7 +292,7 @@ class Utilities(commands.Cog):
             else:
                 await ctx.send("Nieprawidłowa wartość! Wpisz {}settings, by dowiedzieć się więcej".format(prefix))
 
-        elif setting == "QSP":
+        elif setting == "qsp":
             if switch == "on":
                 setting_state = ("QSP", True)
                 await cr.server_parameters[server_id].change_config(setting_state)
