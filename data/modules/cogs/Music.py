@@ -1,8 +1,10 @@
 import asyncio
+import lyricsgenius
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from data.modules.utils import core as cr
+from data.settings.bot_basic_parameters import config
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -320,6 +322,25 @@ class Music(commands.Cog):
                                     inline=False)
 
             await ctx.send(embed=embed)
+
+    @commands.command(aliases=["tekst"])
+    async def lyrics(self, ctx):
+        """Wyświetlanie tekstu pieśni"""
+        server = self.bot.get_guild(ctx.guild.id)
+        server_id = server.id
+        if server_id not in cr.server_players:
+            cr.server_players[server_id] = cr.Player(server_id)
+
+        if cr.server_players[server_id].gra:
+            genius = lyricsgenius.Genius(config.TOKEN_GENIUS)
+            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].gra[0], download=False)
+            song = genius.search_song(title=dictMeta["title"])
+            await ctx.send(song.lyrics)
+            await ctx.send("```"
+                           "Tekst dostarczany przez Genius.com"
+                           "```")
+        else:
+            await ctx.send("Nie gra żadna pieśń!")
 
     @play.before_invoke
     async def ensure_voice(self, ctx):
