@@ -13,7 +13,7 @@ class Utilities(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["pomocy"])
-    async def help(self, ctx, decision: str = None):
+    async def help(self, ctx, decision: str = "None"):
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
         if server_id not in cr.server_parameters:
