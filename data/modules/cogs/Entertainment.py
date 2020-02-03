@@ -30,10 +30,9 @@ class Entertainment(commands.Cog):
             await ctx.send("Czas minął. To była liczba {}".format(cho))
 
     @commands.command(aliases=["zapytaj"])
-    async def question(self, ctx, *, pytanie):
+    async def question(self, ctx, *, question):
         """Zapytaj mnie o cokolwiek"""
-        odpowiedzi = answers
-        await ctx.send("Pytanie: {}\nOdpowiedź: {}".format(pytanie, random.choice(odpowiedzi)))
+        await ctx.send("Pytanie: {}\nOdpowiedź: {}".format(question, random.choice(answers)))
 
     @commands.command(aliases=["pkn"])
     async def rsp(self, ctx, hand):
