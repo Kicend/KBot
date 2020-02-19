@@ -35,7 +35,7 @@ async def on_connect():
     for cog in config.__cogs__:
         try:
             bot.load_extension(cog)
-        except:
+        except discord.ext.commands.errors.NoEntryPointError:
             print("Nie udało się załadować rozszerzenia {}".format(cog))
 
 @bot.event
