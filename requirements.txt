@@ -1,5 +1,5 @@
 lyricsgenius
-discord.py==1.2.3
+discord.py>=1.2.3
 youtube_dl
 psutil
 PyNaCl
