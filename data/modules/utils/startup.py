@@ -34,7 +34,7 @@ async def guild_check(bot):
     remove_user_eco_info(bot)
 
 def add_guild_config(guild_id, mode: int):
-    os.makedirs("data/settings/servers_settings", exist_ok=True)
+    os.makedirs(const.SERVERS_SETTINGS_FILES, exist_ok=True)
     if mode == 0:
         with open("data/settings/servers_settings/{}.json".format(guild_id), "a+") as s:
             json.dump(const.DEFAULT_GUILD_PARAMETERS, s, indent=4)
@@ -57,6 +57,7 @@ def remove_guild_config():
         json.dump(servers_prefixes, p, indent=4)
 
 def add_user_eco_info(guild_id, members_list, mode: int, guild_accounts=None):
+    os.makedirs(const.SERVERS_ECO_DB, exist_ok=True)
     if mode == 0:
         with open(const.SERVERS_ECO_DB + "/{}.json".format(guild_id), "a") as db:
             members_accounts = {}
