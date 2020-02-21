@@ -11,7 +11,7 @@ try:
         servers_prefixes = json.load(f)
 except (FileNotFoundError, FileExistsError):
     os.makedirs("data/settings/servers_settings", exist_ok=True)
-    with open(const.SERVERS_PREFIXES_FILE, "r") as f:
+    with open(const.SERVERS_PREFIXES_FILE, "a") as f:
         servers_prefixes = {}
         json.dump(servers_prefixes, f, indent=4)
 
