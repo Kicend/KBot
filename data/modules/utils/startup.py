@@ -10,7 +10,7 @@ try:
     with open(const.SERVERS_PREFIXES_FILE, "r") as f:
         servers_prefixes = json.load(f)
 except (FileNotFoundError, FileExistsError):
-    os.makedirs("data/settings/servers_settings", exist_ok=True)
+    os.makedirs("data/settings/servers_prefixes", exist_ok=True)
     with open(const.SERVERS_PREFIXES_FILE, "a") as f:
         servers_prefixes = {}
         json.dump(servers_prefixes, f, indent=4)
@@ -39,11 +39,9 @@ def add_guild_config(guild_id, mode: int):
             json.dump(const.DEFAULT_GUILD_PARAMETERS, s, indent=4)
 
     elif mode == 1:
-        with open(const.SERVERS_PREFIXES_FILE, "r") as p:
-            server_prefixes = json.load(p)
         with open(const.SERVERS_PREFIXES_FILE, "w") as p:
-            server_prefixes[str(guild_id)] = const.DEFAULT_SERVER_PREFIX
-            json.dump(server_prefixes, p, indent=4)
+            servers_prefixes[str(guild_id)] = const.DEFAULT_SERVER_PREFIX
+            json.dump(servers_prefixes, p, indent=4)
 
 def remove_guild_config():
     for filename in os.listdir(const.SERVERS_SETTINGS_FILES):
