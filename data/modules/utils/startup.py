@@ -6,8 +6,14 @@ from data.settings.bot_basic_parameters import constant as const
 guild_list = []
 keys_to_delete = []
 
-with open(const.SERVERS_PREFIXES_FILE, "r") as f:
-    servers_prefixes = json.load(f)
+try:
+    with open(const.SERVERS_PREFIXES_FILE, "r") as f:
+        servers_prefixes = json.load(f)
+except (FileNotFoundError, FileExistsError):
+    os.makedirs("data/settings/servers_settings", exist_ok=True)
+    with open(const.SERVERS_PREFIXES_FILE, "r") as f:
+        servers_prefixes = {}
+        json.dump(servers_prefixes, f, indent=4)
 
 async def guild_check(bot):
     for guild in bot.guilds:
