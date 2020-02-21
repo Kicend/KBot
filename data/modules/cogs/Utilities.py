@@ -239,5 +239,10 @@ class Utilities(commands.Cog):
         else:
             await ctx.send("Nieprawidłowa wartość argumentu")
 
+    @commands.command()
+    async def convert(self, ctx, amount, first_unit, second_unit):
+        """Konwerter jednostek"""
+        pass
+
 def setup(bot):
     bot.add_cog(Utilities(bot))
