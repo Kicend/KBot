@@ -62,33 +62,33 @@ class Administration(commands.Cog):
             setting.lower()
 
         async def help_menu():
-            embed = discord.Embed(
+            help_embed = discord.Embed(
                 colour=discord.Colour.blue()
             )
 
-            embed.set_author(name="Ustawienia bota KBot {} na serwerze {}".format(config.version, ctx.guild.name))
-            embed.add_field(name="Wymagana rola DJ: {}".format(
+            help_embed.set_author(name="Ustawienia bota KBot {} na serwerze {}".format(config.version, ctx.guild.name))
+            help_embed.add_field(name="Wymagana rola DJ: {}".format(
                 server_config["require_dj"]),
                 value="{}settings dj <on/off>".format(prefix), inline=False
             )
-            embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
+            help_embed.add_field(name="Zapobieganie duplikacji pieśni w kolejce: {}".format(
                 server_config["QSP"]),
                 value="{}settings QSP <on/off>".format(prefix), inline=False
             )
-            embed.add_field(name="Prefix: {}".format(
+            help_embed.add_field(name="Prefix: {}".format(
                 prefix),
                 value="{}settings prefix <nowy prefix>".format(prefix), inline=False
             )
-            embed.add_field(name="Autorola: {}".format(
+            help_embed.add_field(name="Autorola: {}".format(
                 server_config["autorole"]),
                 value="{}settings autorole <rola do przydzielenia/brak>".format(prefix), inline=False
             )
-            embed.add_field(name="Symbol waluty: {}".format(
+            help_embed.add_field(name="Symbol waluty: {}".format(
                 server_config["currency_symbol"]),
                 value="{}settings curr_symbol <symbol>".format(prefix), inline=False
             )
 
-            await ctx.send(embed=embed)
+            await ctx.send(embed=help_embed)
 
         if setting is None and switch is None:
             await help_menu()
