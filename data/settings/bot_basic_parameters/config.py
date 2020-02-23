@@ -1,9 +1,12 @@
 import time
-from data.settings.bot_basic_parameters import TOKENS
+from json import load
+
+with open("data/settings/bot_basic_parameters/SECRET.json", "r") as f:
+    secrets = load(f)
 
 # Podstawowe parametry bota
-TOKEN = TOKENS.DISCORD_BOT_TOKEN
-TOKEN_GENIUS = TOKENS.GENIUS_TOKEN
+TOKEN = secrets["DISCORD_TOKEN"]
+TOKEN_GENIUS = secrets["GENIUS_TOKEN"]
 commands_prefix = "!"
 version = "0.34-3"
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
