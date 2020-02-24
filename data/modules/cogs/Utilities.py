@@ -183,7 +183,7 @@ class Utilities(commands.Cog):
         embed.add_field(name="RAM:", value="{} MB".format(round(process.memory_info().rss / (1024 * 1024))),
                         inline=False)
         embed.add_field(name="Wersja:", value=config.version, inline=False)
-        embed.add_field(name="Biblioteka", value="discord.py 1.2.3", inline=False)
+        embed.add_field(name="Biblioteka", value="discord.py 1.3.2", inline=False)
         embed.add_field(name="Autor:", value="Kicend#2690", inline=False)
         await ctx.send(embed=embed)
 
