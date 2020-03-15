@@ -3,7 +3,7 @@ import random
 from discord.ext import commands
 from data.modules.Entertainment.pkn import rsp
 from data.modules.Entertainment.coin import coin
-from data.modules.Entertainment.zapytaj import answers
+from data.modules.Entertainment.question import answers
 
 class Entertainment(commands.Cog):
     def __init__(self, bot):
