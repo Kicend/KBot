@@ -269,7 +269,7 @@ class Music(commands.Cog):
             await ctx.send("Nie posiadasz roli DJ!")
 
     @commands.command(aliases=["czyść_kolejke"])
-    async def delete_queue(self, ctx):
+    async def clear_queue(self, ctx):
         """Wyczyść kolejkę z niepotrzebnych pieśni"""
         server = self.bot.get_guild(ctx.guild.id)
         server_id = server.id
