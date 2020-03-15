@@ -5,6 +5,7 @@ import os
 import youtube_dl
 from data.lang.pl_PL import communicates_PL
 from data.settings.bot_basic_parameters import constant as const
+from warnings import filterwarnings
 
 server_players = {}
 server_tools = {}
@@ -175,6 +176,7 @@ class Player(object):
             del self.voters[0]
 
     async def vote_system(self, ctx):
+        filterwarnings("ignore", category=RuntimeWarning)
         if self.vote_switch == 0:
             vc_members = discord.VoiceChannel = ctx.author.voice.channel
             self.voters_count = len(vc_members.members)
@@ -186,7 +188,7 @@ class Player(object):
                 self.task.cancel()
                 self.loop = False
                 await Player.vote_list_clear(self)
-                asyncio.run(await Player.main(self, ctx))
+                asyncio.run(Player.main(self, ctx))
             else:
                 await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
                 self.vote_switch = 1
@@ -204,7 +206,7 @@ class Player(object):
                     self.loop = False
                     await Player.vote_list_clear(self)
                     self.vote_switch = 0
-                    asyncio.run(await Player.main(self, ctx))
+                    asyncio.run(Player.main(self, ctx))
 
 class Tools(object):
     def __init__(self, id):
