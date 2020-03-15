@@ -43,22 +43,22 @@ class Music(commands.Cog):
             else:
                 if server_id not in cr.server_players:
                     cr.server_players[server_id] = cr.Player(server_id)
-                if not cr.server_players[server_id].gra:
+                if not cr.server_players[server_id].playing:
                     await ctx.send("Rozpoczynam odtwarzanie")
-                    cr.server_players[server_id].kolejka.append(url)
+                    cr.server_players[server_id].queue.append(url)
                     asyncio.run(await cr.server_players[server_id].main(ctx))
                 else:
-                    if url in cr.server_players[server_id].kolejka:
+                    if url in cr.server_players[server_id].queue:
                         url_in_queue = True
                     else:
                         url_in_queue = False
                     if server_config["QSP"] and url_in_queue is True:
                         await ctx.send("Nie możesz poczekać? Po co kolejna taka sama piosenka w kolejce?")
                     elif server_config["QSP"] is False or url_in_queue is False:
-                        cr.server_players[server_id].kolejka.append(url)
+                        cr.server_players[server_id].queue.append(url)
                         dictMeta = cr.ytdl.extract_info(url, download=False)
                         title = dictMeta['title']
-                        cr.server_players[server_id].piosenki.append(title)
+                        cr.server_players[server_id].songs.append(title)
                         await ctx.send("Pieśń dodana do kolejki")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
@@ -74,10 +74,10 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].kolejka:
+            if cr.server_players[server_id].queue:
                 await ctx.send("Pieśń została pominięta przez DJ'a!")
                 ctx.voice_client.stop()
-                del cr.server_players[server_id].gra[0]
+                del cr.server_players[server_id].playing[0]
                 cr.server_players[server_id].task.cancel()
                 if cr.server_players[server_id].loop:
                     cr.server_players[server_id].loop = False
@@ -88,7 +88,7 @@ class Music(commands.Cog):
         elif has_permission is False:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].kolejka:
+            if cr.server_players[server_id].queue:
                 await cr.server_players[server_id].vote_system(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
@@ -101,10 +101,10 @@ class Music(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_players:
             cr.server_players[server_id] = cr.Player(server_id)
-        if cr.server_players[server_id].kolejka:
+        if cr.server_players[server_id].queue:
             await ctx.send("Pieśń została pominięta przez administratora!")
             ctx.voice_client.stop()
-            del cr.server_players[server_id].gra[0]
+            del cr.server_players[server_id].playing[0]
             cr.server_players[server_id].task.cancel()
             if cr.server_players[server_id].vote_switch == 1:
                 cr.server_players[server_id].vote_switch = 0
@@ -144,7 +144,7 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].gra:
+            if cr.server_players[server_id].playing:
                 if not cr.server_players[server_id].loop:
                     cr.server_players[server_id].loop = True
                     await ctx.send("Pieśń została zapętlona!")
@@ -163,8 +163,8 @@ class Music(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_players:
             cr.server_players[server_id] = cr.Player(server_id)
-        if cr.server_players[server_id].gra:
-            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].gra[0], download=False)
+        if cr.server_players[server_id].playing:
+            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing[0], download=False)
             time = dictMeta['duration']
 
             embed = discord.Embed(
@@ -173,7 +173,7 @@ class Music(commands.Cog):
 
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
-            embed.add_field(name="URL:", value=cr.server_players[server_id].gra[0], inline=False)
+            embed.add_field(name="URL:", value=cr.server_players[server_id].playing[0], inline=False)
             embed.add_field(name="Czas:", value="{}/{}".format(
                             str(await cr.server_players[server_id].converter(cr.server_players[server_id].now)),
                             str(await cr.server_players[server_id].converter(time))), inline=False
@@ -194,7 +194,7 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].gra:
+            if cr.server_players[server_id].playing:
                 await cr.server_players[server_id].pause(ctx)
                 await ctx.send("Pieśń została zapauzowana")
             else:
@@ -213,7 +213,7 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].gra:
+            if cr.server_players[server_id].playing:
                 await cr.server_players[server_id].resume(ctx)
                 await ctx.send("Pieśń została wznowiona")
             else:
@@ -257,12 +257,11 @@ class Music(commands.Cog):
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
             await ctx.voice_client.disconnect()
-            if cr.server_players[server_id].kolejka:
-                cr.server_players[server_id].kolejka = []
-            if cr.server_players[server_id].piosenki:
-                cr.server_players[server_id].piosenki = []
-            if cr.server_players[server_id].gra:
-                del cr.server_players[server_id].gra[0]
+            if cr.server_players[server_id].queue:
+                cr.server_players[server_id].queue = []
+                cr.server_players[server_id].songs = []
+            if cr.server_players[server_id].playing:
+                del cr.server_players[server_id].playing[0]
             del cr.server_players[server_id]
             await ctx.send("Pamięć podręczna została wyczyszczona")
         else:
@@ -279,10 +278,9 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].kolejka:
-                cr.server_players[server_id].kolejka = []
-            if cr.server_players[server_id].piosenki:
-                cr.server_players[server_id].piosenki = []
+            if cr.server_players[server_id].queue:
+                cr.server_players[server_id].queue = []
+                cr.server_players[server_id].songs = []
             await ctx.send("Kolejka została wyczyszczona z pieśni")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
@@ -298,13 +296,13 @@ class Music(commands.Cog):
             colour=discord.Colour.blue()
         )
 
-        length = len(cr.server_players[server_id].piosenki)
+        length = len(cr.server_players[server_id].songs)
         pages = round(length / 10 + 0.5, 0)
         if length % 10 == 0 and length/10 % 2 != 0:
             pages -= 1
 
         if page > pages:
-            if not cr.server_players[server_id].piosenki:
+            if not cr.server_players[server_id].songs:
                 await ctx.send("Kolejka jest pusta")
             else:
                 await ctx.send("Nie ma tylu stron! Aktualnie jest {}".format(int(pages)))
@@ -314,7 +312,7 @@ class Music(commands.Cog):
             else:
                 embed.set_author(name="Kolejka bota KBot {}/{}".format(page, int(pages)))
 
-            for number, song in enumerate(cr.server_players[server_id].piosenki):
+            for number, song in enumerate(cr.server_players[server_id].songs):
                 if page * 10 - 10 <= number <= page * 10 - 1:
                     embed.add_field(name="Piosenka nr {}".format(number+1), value="{}".format(song),
                                     inline=False)
@@ -329,9 +327,9 @@ class Music(commands.Cog):
         if server_id not in cr.server_players:
             cr.server_players[server_id] = cr.Player(server_id)
 
-        if cr.server_players[server_id].gra:
+        if cr.server_players[server_id].playing:
             genius = lyricsgenius.Genius(config.TOKEN_GENIUS)
-            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].gra[0], download=False)
+            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing[0], download=False)
             song = genius.search_song(title=dictMeta["title"])
             await ctx.send(song.lyrics)
             await ctx.send("```"
