@@ -258,11 +258,9 @@ class Music(commands.Cog):
                 cr.server_players[server_id] = cr.Player(server_id)
             await ctx.voice_client.disconnect()
             if cr.server_players[server_id].kolejka:
-                while cr.server_players[server_id].kolejka:
-                    del cr.server_players[server_id].kolejka[0]
+                cr.server_players[server_id].kolejka = []
             if cr.server_players[server_id].piosenki:
-                while cr.server_players[server_id].piosenki:
-                    del cr.server_players[server_id].piosenki[0]
+                cr.server_players[server_id].piosenki = []
             if cr.server_players[server_id].gra:
                 del cr.server_players[server_id].gra[0]
             del cr.server_players[server_id]
@@ -281,10 +279,10 @@ class Music(commands.Cog):
         if has_permission is True:
             if server_id not in cr.server_players:
                 cr.server_players[server_id] = cr.Player(server_id)
-            while cr.server_players[server_id].kolejka:
-                del cr.server_players[server_id].kolejka[0]
-            while cr.server_players[server_id].piosenki:
-                del cr.server_players[server_id].piosenki[0]
+            if cr.server_players[server_id].kolejka:
+                cr.server_players[server_id].kolejka = []
+            if cr.server_players[server_id].piosenki:
+                cr.server_players[server_id].piosenki = []
             await ctx.send("Kolejka została wyczyszczona z pieśni")
         else:
             await ctx.send("Nie posiadasz roli DJ!")
