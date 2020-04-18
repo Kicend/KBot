@@ -300,7 +300,7 @@ class GuildParameters(object):
             with open(self.filename, "a+") as f:
                 json.dump(guild_parameters, f, indent=4)
         with open(self.filename_prefixes, "r") as f:
-            server_prefixes = json.dump(server_prefix, f, indent=4)
+            server_prefixes = json.load(f)
         if not str(self.id) in server_prefixes.keys():
             with open(self.filename_prefixes, "w") as f:
                 server_prefixes[str(self.id)] = server_prefix
