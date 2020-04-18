@@ -8,7 +8,7 @@ with open("data/settings/bot_basic_parameters/SECRET.json", "r") as f:
 TOKEN = secrets["DISCORD_TOKEN"]
 TOKEN_GENIUS = secrets["GENIUS_TOKEN"]
 commands_prefix = "!"
-version = "0.34-5"
+version = "0.35"
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 __cogs__ = [
     "data.modules.cogs.Entertainment",

@@ -77,8 +77,16 @@ async def on_member_join(member):
     server_id = member.guild.id
     if server_id not in cr.server_economy:
         cr.server_economy[server_id] = cr.EcoMethods(server_id)
+    if server_id not in cr.server_parameters:
+        cr.server_parameters[server_id] = cr.GuildParameters(server_id)
 
     await cr.server_economy[server_id].modify_eco_filename(member, 0)
+    server_config = await cr.server_parameters[server_id].check_config()
+    autorole = server_config["autorole"]
+    if autorole is not None:
+        autorole_id = autorole[-18:]
+        role = discord.utils.get(member.guild.roles, id=int(autorole_id))
+        await member.add_roles(role)
 
 @bot.event
 async def on_member_remove(member):
