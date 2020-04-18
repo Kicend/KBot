@@ -163,10 +163,14 @@ class Administration(commands.Cog):
 
         elif setting == "autorole":
             # TODO: Zamiana parametru on na konkretną rolę na serwerze
-            if switch == "on":
-                setting_state = ("autorole", "on")
-                await cr.server_parameters[server_id].change_config(setting_state)
-                await ctx.send("Autorola pomyślnie ustawiona!")
+            if type(switch) == str and switch.index("&") == 2:
+                role = server.get_role(int(switch[3:-1]))
+                if type(role) == discord.Role:
+                    setting_state = ("autorole", "{} ID: {}".format(role.name, switch[3:-1]))
+                    await cr.server_parameters[server_id].change_config(setting_state)
+                    await ctx.send("Autorola pomyślnie ustawiona!")
+                else:
+                    await ctx.send("Autorola nie została zmieniona!")
             elif switch == "brak":
                 setting_state = ("autorole", None)
                 await cr.server_parameters[server_id].change_config(setting_state)
@@ -213,19 +217,19 @@ class Administration(commands.Cog):
 
     @commands.command(aliases=["dodaj_role"])
     @has_permissions(manage_roles=True)
-    async def add_role(self, ctx, member: discord.Member, rola: discord.Role):
+    async def add_role(self, ctx, member: discord.Member, role: discord.Role):
         """Obdaruj użytkownika rolą"""
-        role_name = rola.name
-        role = discord.utils.get(ctx.guild.roles, name=role_name)
+        role_id = role.id
+        role = discord.utils.get(ctx.guild.roles, id=role_id)
         await member.add_roles(role)
         await ctx.send("Rola została przyznana!")
 
     @commands.command(aliases=["usuń_role"])
     @has_permissions(manage_roles=True)
-    async def remove_role(self, ctx, member: discord.Member, rola: discord.Role):
+    async def remove_role(self, ctx, member: discord.Member, role: discord.Role):
         """Zabierz nikczemnikowi rolę"""
-        role_name = rola.name
-        role = discord.utils.get(ctx.guild.roles, name=role_name)
+        role_id = role.name
+        role = discord.utils.get(ctx.guild.roles, id=role_id)
         await member.remove_roles(role)
         await ctx.send("Rola została odebrana!")
 
