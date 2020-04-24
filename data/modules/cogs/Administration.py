@@ -162,7 +162,6 @@ class Administration(commands.Cog):
                 await cr.server_parameters[server_id].change_prefix(ctx, new_prefix)
 
         elif setting == "autorole":
-            # TODO: Zamiana parametru on na konkretną rolę na serwerze
             if type(switch) == str and switch.index("&") == 2:
                 role = server.get_role(int(switch[3:-1]))
                 if type(role) == discord.Role:
