@@ -82,7 +82,7 @@ class Music(commands.Cog):
                         return None
                     else:
                         try:
-                            cho = int(msg.content)
+                            cho = int(msg.content) + 1
                             url = "https://www.youtube.com" + search_results[cho]["link"]
                             await play_command_procedures(url)
                         except TypeError:
