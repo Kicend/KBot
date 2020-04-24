@@ -3,6 +3,7 @@ import lyricsgenius
 import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
+from youtube_search import YoutubeSearch
 from data.modules.utils import core as cr
 from data.settings.bot_basic_parameters import config
 
@@ -37,29 +38,59 @@ class Music(commands.Cog):
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
         server_config = await cr.server_parameters[server_id].check_config()
+
+        async def play_command_procedures(link):
+            if server_id not in cr.server_players:
+                cr.server_players[server_id] = cr.Player(server_id)
+            if not cr.server_players[server_id].playing:
+                await ctx.send("Rozpoczynam odtwarzanie")
+                cr.server_players[server_id].queue.append(link)
+                asyncio.run(await cr.server_players[server_id].main(ctx))
+            else:
+                if link in cr.server_players[server_id].queue:
+                    url_in_queue = True
+                else:
+                    url_in_queue = False
+                if server_config["QSP"] and url_in_queue is True:
+                    await ctx.send("Nie możesz poczekać? Po co kolejna taka sama piosenka w kolejce?")
+                elif server_config["QSP"] is False or url_in_queue is False:
+                    cr.server_players[server_id].queue.append(link)
+                    dictMeta = cr.ytdl.extract_info(link, download=False)
+                    title = dictMeta['title']
+                    cr.server_players[server_id].songs.append(title)
+                    await ctx.send("Pieśń dodana do kolejki")
+
         if has_permission is True:
             if not url.count("https"):
-                await ctx.send("Wyszukiwanie muzyki zostało tymczasowo wyłączone. Przyjmowane są tylko adresy URL!")
-            else:
-                if server_id not in cr.server_players:
-                    cr.server_players[server_id] = cr.Player(server_id)
-                if not cr.server_players[server_id].playing:
-                    await ctx.send("Rozpoczynam odtwarzanie")
-                    cr.server_players[server_id].queue.append(url)
-                    asyncio.run(await cr.server_players[server_id].main(ctx))
-                else:
-                    if url in cr.server_players[server_id].queue:
-                        url_in_queue = True
+                search_results = YoutubeSearch(url, max_results=10).to_dict()
+
+                embed = discord.Embed(
+                    colour=discord.Colour.blue()
+                )
+
+                embed.set_author(name="Wyniki wyszukiwania dla hasła {}".format(url))
+                for number, result in enumerate(search_results):
+                    embed.add_field(name="Propozycja nr {}".format(number+1),
+                                    value="Tytuł: {}".format(result["title"]),
+                                    inline=False)
+
+                await ctx.send(embed=embed)
+                await ctx.send("```Wybierz piosenkę wpisując odpowiednią cyfrę. Masz na to 10 sekund!```")
+                try:
+                    msg = await self.bot.wait_for("message", timeout=10)
+                    if ctx.author.bot:
+                        return None
                     else:
-                        url_in_queue = False
-                    if server_config["QSP"] and url_in_queue is True:
-                        await ctx.send("Nie możesz poczekać? Po co kolejna taka sama piosenka w kolejce?")
-                    elif server_config["QSP"] is False or url_in_queue is False:
-                        cr.server_players[server_id].queue.append(url)
-                        dictMeta = cr.ytdl.extract_info(url, download=False)
-                        title = dictMeta['title']
-                        cr.server_players[server_id].songs.append(title)
-                        await ctx.send("Pieśń dodana do kolejki")
+                        try:
+                            cho = int(msg.content)
+                            url = "https://www.youtube.com" + search_results[cho]["link"]
+                            await play_command_procedures(url)
+                        except TypeError:
+                            await ctx.send("Wiadomośc miała być liczbą!")
+                except asyncio.TimeoutError:
+                    await ctx.send("Czas minął")
+            else:
+                await play_command_procedures(url)
         else:
             await ctx.send("Nie posiadasz roli DJ!")
 

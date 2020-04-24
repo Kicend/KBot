@@ -31,7 +31,7 @@ class Utilities(commands.Cog):
             embed.set_author(name="Sekcja pomocy bota KBot wersja {} (strona 1/5)".format(version))
             embed.add_field(name="{}wkrocz [nazwa kanału]".format(prefix), value="Wkracza z buta na czat głosowy",
                             inline=False)
-            embed.add_field(name="{}strumykuj <url>".format(prefix), value="Strumykuj z interneta pieśni",
+            embed.add_field(name="{}strumykuj <url lub tytuł>".format(prefix), value="Strumykuj z interneta pieśni",
                             inline=False)
             embed.add_field(name="{}następna".format(prefix), value="Przewiń do kolejnej pieśni",
                             inline=False)
@@ -183,7 +183,7 @@ class Utilities(commands.Cog):
         embed.add_field(name="RAM:", value="{} MB".format(round(process.memory_info().rss / (1024 * 1024))),
                         inline=False)
         embed.add_field(name="Wersja:", value=config.version, inline=False)
-        embed.add_field(name="Biblioteka", value="discord.py 1.3.2", inline=False)
+        embed.add_field(name="Biblioteka", value="discord.py 1.3.3", inline=False)
         embed.add_field(name="Autor:", value="Kicend#2690", inline=False)
         await ctx.send(embed=embed)
 
