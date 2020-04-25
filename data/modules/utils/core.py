@@ -96,8 +96,7 @@ class Player(object):
             del self.playing[0]
             if self.vote_switch == 1:
                 self.vote_switch = 0
-                while self.voters:
-                    del self.voters[0]
+                self.voters = []
                 await ctx.send("{}".format(communicates_PL.communicates.get(0)))
             if self.playing == [] and self.queue == []:
                 await ctx.send("Odtwarzacz kończy pracę")
@@ -171,10 +170,6 @@ class Player(object):
             if self.is_paused == 1:
                 self.now = self.save_time
 
-    async def vote_list_clear(self):
-        while self.voters:
-            del self.voters[0]
-
     async def vote_system(self, ctx):
         filterwarnings("ignore", category=RuntimeWarning)
         if self.vote_switch == 0:
@@ -187,8 +182,8 @@ class Player(object):
                 ctx.voice_client.stop()
                 self.task.cancel()
                 self.loop = False
-                await Player.vote_list_clear(self)
-                asyncio.run(Player.main(self, ctx))
+                self.voters = []
+                asyncio.run(await Player.main(self, ctx))
             else:
                 await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
                 self.vote_switch = 1
@@ -204,9 +199,9 @@ class Player(object):
                     ctx.voice_client.stop()
                     self.task.cancel()
                     self.loop = False
-                    await Player.vote_list_clear(self)
+                    self.voters = []
                     self.vote_switch = 0
-                    asyncio.run(Player.main(self, ctx))
+                    asyncio.run(await Player.main(self, ctx))
 
 class Tools(object):
     def __init__(self, id):

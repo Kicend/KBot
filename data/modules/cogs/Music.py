@@ -75,7 +75,7 @@ class Music(commands.Cog):
                                     inline=False)
 
                 await ctx.send(embed=embed)
-                await ctx.send("```Wybierz piosenkę wpisując odpowiednią cyfrę. Masz na to 10 sekund!```")
+                await ctx.send("```Wybierz pieśń wpisując odpowiednią cyfrę. Masz na to 10 sekund!```")
                 try:
                     msg = await self.bot.wait_for("message", timeout=10)
                     if ctx.author.bot:
@@ -101,26 +101,27 @@ class Music(commands.Cog):
         server_id = server.id
         if server_id not in cr.server_parameters:
             cr.server_parameters[server_id] = cr.GuildParameters(server_id)
+        if server_id not in cr.server_players:
+            cr.server_players[server_id] = cr.Player(server_id)
         has_permission = await cr.server_parameters[server_id].check_permissions(ctx, "DJ")
-        if has_permission is True:
-            if server_id not in cr.server_players:
-                cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].queue:
-                await ctx.send("Pieśń została pominięta przez DJ'a!")
-                ctx.voice_client.stop()
-                del cr.server_players[server_id].playing[0]
-                cr.server_players[server_id].task.cancel()
-                if cr.server_players[server_id].loop:
-                    cr.server_players[server_id].loop = False
-                if cr.server_players[server_id].vote_switch == 1:
-                    cr.server_players[server_id].vote_switch = 0
-                    await cr.server_players[server_id].vote_list_clear()
-                asyncio.run(await cr.server_players[server_id].main(ctx))
-        elif has_permission is False:
-            if server_id not in cr.server_players:
-                cr.server_players[server_id] = cr.Player(server_id)
-            if cr.server_players[server_id].queue:
-                await cr.server_players[server_id].vote_system(ctx)
+        server_config = await cr.server_parameters[server_id].check_config()
+        require_dj = server_config["require_dj"]
+        if cr.server_players[server_id].queue:
+            if has_permission is True and require_dj == "on":
+                if cr.server_players[server_id].queue:
+                    await ctx.send("Pieśń została pominięta przez DJ'a!")
+                    ctx.voice_client.stop()
+                    del cr.server_players[server_id].playing[0]
+                    cr.server_players[server_id].task.cancel()
+                    if cr.server_players[server_id].loop:
+                        cr.server_players[server_id].loop = False
+                    if cr.server_players[server_id].vote_switch == 1:
+                        cr.server_players[server_id].vote_switch = 0
+                        cr.server_players[server_id].voters = []
+                    asyncio.run(await cr.server_players[server_id].main(ctx))
+            else:
+                if cr.server_players[server_id].queue:
+                    await cr.server_players[server_id].vote_system(ctx)
         else:
             await ctx.send("Brak pieśni w kolejce")
 
