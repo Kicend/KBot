@@ -111,7 +111,7 @@ class Music(commands.Cog):
                 if cr.server_players[server_id].queue:
                     await ctx.send("Pieśń została pominięta przez DJ'a!")
                     ctx.voice_client.stop()
-                    del cr.server_players[server_id].playing[0]
+                    cr.server_players[server_id].playing = None
                     cr.server_players[server_id].task.cancel()
                     if cr.server_players[server_id].loop:
                         cr.server_players[server_id].loop = False
@@ -136,7 +136,7 @@ class Music(commands.Cog):
         if cr.server_players[server_id].queue:
             await ctx.send("Pieśń została pominięta przez administratora!")
             ctx.voice_client.stop()
-            del cr.server_players[server_id].playing[0]
+            cr.server_players[server_id].playing = None
             cr.server_players[server_id].task.cancel()
             if cr.server_players[server_id].vote_switch == 1:
                 cr.server_players[server_id].vote_switch = 0
@@ -196,7 +196,7 @@ class Music(commands.Cog):
         if server_id not in cr.server_players:
             cr.server_players[server_id] = cr.Player(server_id)
         if cr.server_players[server_id].playing:
-            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing[0], download=False)
+            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing, download=False)
             time = dictMeta['duration']
 
             embed = discord.Embed(
@@ -205,7 +205,7 @@ class Music(commands.Cog):
 
             embed.set_author(name="Aktualnie gra")
             embed.add_field(name="Tytuł:", value=dictMeta['title'], inline=False)
-            embed.add_field(name="URL:", value=cr.server_players[server_id].playing[0], inline=False)
+            embed.add_field(name="URL:", value=cr.server_players[server_id].playing, inline=False)
             embed.add_field(name="Czas:", value="{}/{}".format(
                             str(await cr.server_players[server_id].converter(cr.server_players[server_id].now)),
                             str(await cr.server_players[server_id].converter(time))), inline=False
@@ -292,8 +292,8 @@ class Music(commands.Cog):
             if cr.server_players[server_id].queue:
                 cr.server_players[server_id].queue = []
                 cr.server_players[server_id].songs = []
-            if cr.server_players[server_id].playing:
-                del cr.server_players[server_id].playing[0]
+            if cr.server_players[server_id].playing is not None:
+                cr.server_players[server_id].playing = None
             del cr.server_players[server_id]
             await ctx.send("Pamięć podręczna została wyczyszczona")
         else:
@@ -361,7 +361,7 @@ class Music(commands.Cog):
 
         if cr.server_players[server_id].playing:
             genius = lyricsgenius.Genius(config.TOKEN_GENIUS)
-            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing[0], download=False)
+            dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing, download=False)
             song = genius.search_song(title=dictMeta["title"])
             if song is not None:
                 await ctx.send(song.lyrics)

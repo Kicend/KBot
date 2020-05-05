@@ -65,7 +65,7 @@ class Player(object):
         self.id = id
         self.queue = []
         self.songs = []
-        self.playing = []
+        self.playing = None
         self.voters_count = None
         self.voters = []
         self.vote_switch = 0
@@ -80,45 +80,43 @@ class Player(object):
     async def player(self, ctx):
         while True:
             self.now = 0
-            self.playing.append(self.queue[0])
-            url = self.queue.pop(0)
-            player = await YTDLSource.from_url(url, loop=False, stream=True)
+            self.playing = self.queue.pop(0)
+            player = await YTDLSource.from_url(self.playing, loop=False, stream=True)
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
             await ctx.send('Teraz muzykuję: {}'.format(player.title))
-            dictMeta = ytdl.extract_info(url, download=False)
+            dictMeta = ytdl.extract_info(self.playing, download=False)
             duration = dictMeta['duration']
             if self.songs:
                 del self.songs[0]
             await Player.current_time(self, duration)
             if self.loop:
                 await Player.loop_player(self, ctx)
-            del self.playing[0]
+            self.playing = None
             if self.vote_switch == 1:
                 self.vote_switch = 0
                 self.voters = []
                 await ctx.send("{}".format(communicates_PL.communicates.get(0)))
-            if self.playing == [] and self.queue == []:
+            if self.playing is None and self.queue == []:
                 await ctx.send("Odtwarzacz kończy pracę")
                 break
         await asyncio.sleep(30)
-        if self.playing != [] or self.queue != []:
+        if self.playing is not None or self.queue != []:
             return None
         else:
             await ctx.voice_client.disconnect()
             await asyncio.sleep(30)
-            if self.playing != [] or self.queue != []:
+            if self.playing is not None or self.queue != []:
                 return None
             else:
                 del server_players[self.id]
 
     async def loop_player(self, ctx):
-        url = self.playing[0]
-        dictMeta = ytdl.extract_info(url, download=False)
+        dictMeta = ytdl.extract_info(self.playing, download=False)
         duration = dictMeta['duration']
         while self.loop:
             self.now = 0
-            player = await YTDLSource.from_url(url, loop=False, stream=True)
+            player = await YTDLSource.from_url(self.playing, loop=False, stream=True)
             ctx.voice_client.play(player, after=lambda e: print('Błąd bota: %s' % e) if e else None)
 
             await Player.current_time(self, duration)
@@ -178,7 +176,7 @@ class Player(object):
             self.voters.append(ctx.author)
             if self.voters_count - 1 == 1:
                 await ctx.send("Pieśń została pominięta!")
-                del self.playing[0]
+                self.playing = None
                 ctx.voice_client.stop()
                 self.task.cancel()
                 self.loop = False
@@ -195,7 +193,7 @@ class Player(object):
                 await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count - 1))
                 if len(self.voters) >= round(self.voters_count/2 - 0.5, 0):
                     await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
-                    del self.playing[0]
+                    self.playing = None
                     ctx.voice_client.stop()
                     self.task.cancel()
                     self.loop = False
