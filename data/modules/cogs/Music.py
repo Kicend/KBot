@@ -363,10 +363,13 @@ class Music(commands.Cog):
             genius = lyricsgenius.Genius(config.TOKEN_GENIUS)
             dictMeta = cr.ytdl.extract_info(cr.server_players[server_id].playing[0], download=False)
             song = genius.search_song(title=dictMeta["title"])
-            await ctx.send(song.lyrics)
-            await ctx.send("```"
-                           "Tekst dostarczany przez Genius.com"
-                           "```")
+            if song is not None:
+                await ctx.send(song.lyrics)
+                await ctx.send("```"
+                               "Tekst dostarczany przez Genius.com"
+                               "```")
+            else:
+                await ctx.send("Nie znaleziono tekstu!")
         else:
             await ctx.send("Nie gra żadna pieśń!")
 
