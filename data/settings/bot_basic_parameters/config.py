@@ -1,14 +1,19 @@
 import time
 from json import load
+from os import environ
 
-with open("data/settings/bot_basic_parameters/SECRET.json", "r") as f:
-    secrets = load(f)
+try:
+    with open("data/settings/bot_basic_parameters/SECRET.json", "r") as f:
+        secrets = load(f)
+        TOKEN = secrets["DISCORD_TOKEN"]
+        TOKEN_GENIUS = secrets["GENIUS_TOKEN"]
+except FileNotFoundError:
+    TOKEN = environ["DISCORD"]
+    TOKEN_GENIUS = environ["GENIUS"]
 
 # Podstawowe parametry bota
-TOKEN = secrets["DISCORD_TOKEN"]
-TOKEN_GENIUS = secrets["GENIUS_TOKEN"]
 commands_prefix = "!"
-version = "0.37-1"
+version = "0.37-2"
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 __cogs__ = [
     "data.modules.cogs.Entertainment",

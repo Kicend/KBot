@@ -181,6 +181,7 @@ class Player(object):
                 self.task.cancel()
                 self.loop = False
                 self.voters = []
+                # noinspection PyTypeChecker
                 asyncio.run(await Player.main(self, ctx))
             else:
                 await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
@@ -199,6 +200,7 @@ class Player(object):
                     self.loop = False
                     self.voters = []
                     self.vote_switch = 0
+                    # noinspection PyTypeChecker
                     asyncio.run(await Player.main(self, ctx))
 
 class Tools(object):
