@@ -6,3 +6,4 @@ PyNaCl
 cffi
 websockets
 ffmpeg>=1.4
+youtube-search
