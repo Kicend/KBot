@@ -25,9 +25,8 @@ def get_prefix(bot, message):
     return prefixes[str(message.guild.id)]
 
 bot = commands.Bot(command_prefix=get_prefix, description='KBot wersja {}'.format(config.version))
-
+cr.share.append(bot)
 bot.remove_command("help")
-
 status = ["KBot {}".format(config.version), "!pomocy <1-5>"]
 
 @bot.event
@@ -95,6 +94,24 @@ async def on_member_remove(member):
         cr.server_economy[server_id] = cr.EcoMethods(server_id)
 
     await cr.server_economy[server_id].modify_eco_filename(member, 1)
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    event_vc = None
+    server_id = member.guild.id
+    for voice_client in bot.voice_clients:
+        if voice_client.guild.id == member.guild.id:
+            event_vc = voice_client
+    if event_vc in bot.voice_clients:
+        if server_id not in cr.server_players:
+            cr.server_players[server_id] = cr.Player(server_id)
+        if before.channel is None and cr.server_players[server_id].vote_switch == 1 and member.bot is False:
+            cr.server_players[server_id].voters_count += 1
+        elif after.channel is None and cr.server_players[server_id].vote_switch == 1 and member.bot is False:
+            if member in cr.server_players[server_id].voters:
+                del cr.server_players[server_id].voters[member]
+        if cr.server_players[server_id].vote_switch == 1:
+            await cr.server_players[server_id].vote_system(cr.server_players[server_id].vote_context, True)
 
 @bot.event
 async def on_command_error(ctx, error):

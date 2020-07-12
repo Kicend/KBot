@@ -11,6 +11,7 @@ server_players = {}
 server_tools = {}
 server_parameters = {}
 server_economy = {}
+share = []
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -66,9 +67,13 @@ class Player(object):
         self.queue = []
         self.songs = []
         self.playing = None
+        self.vote_context = None
+        self.vc = None
         self.voters_count = None
         self.voters = []
         self.vote_switch = 0
+        self.vote_vc = None
+        self.vote_tc = None
         self.is_paused = 0
         self.loop = False
         self.task = None
@@ -168,11 +173,19 @@ class Player(object):
             if self.is_paused == 1:
                 self.now = self.save_time
 
-    async def vote_system(self, ctx):
+    async def vote_system(self, ctx, event=False):
+        if self.vote_context is None:
+            self.vote_context = ctx
         filterwarnings("ignore", category=RuntimeWarning)
         if self.vote_switch == 0:
-            vc_members = discord.VoiceChannel = ctx.author.voice.channel
-            self.voters_count = len(vc_members.members)
+            for voice_client in share[0].voice_clients:
+                if voice_client.guild.id == ctx.author.guild.id:
+                    self.vc = discord.VoiceChannel = voice_client.channel
+                else:
+                    await ctx.send("Bot nie jest połączony z żadnym kanałem głosowym")
+            self.vote_vc = self.vc.id
+            self.vote_tc = ctx.message.channel.id
+            self.voters_count = len(self.vc.members)
             self.voters.append(ctx.author)
             if self.voters_count - 1 == 1:
                 await ctx.send("Pieśń została pominięta!")
@@ -187,21 +200,25 @@ class Player(object):
                 await ctx.send("Zagłosowało 1/{}".format(self.voters_count - 1))
                 self.vote_switch = 1
         elif self.vote_switch == 1:
-            if ctx.author in self.voters:
-                await ctx.send("Już oddałeś głos!")
-            elif ctx.author not in self.voters:
-                self.voters.append(ctx.author)
-                await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count - 1))
-                if len(self.voters) >= round(self.voters_count/2 - 0.5, 0):
-                    await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
-                    self.playing = None
-                    ctx.voice_client.stop()
-                    self.task.cancel()
-                    self.loop = False
-                    self.voters = []
-                    self.vote_switch = 0
-                    # noinspection PyTypeChecker
-                    asyncio.run(await Player.main(self, ctx))
+            if ctx.author.voice.channel.id == self.vote_vc:
+                if ctx.author in self.voters and event is False:
+                    await ctx.send("Już oddałeś głos!")
+                elif ctx.author not in self.voters or event is True:
+                    self.voters.append(ctx.author)
+                    await ctx.send("Zagłosowało {}/{}".format(len(self.voters), self.voters_count - 1))
+                    if len(self.voters) >= round(self.voters_count/2 - 0.5, 0):
+                        await ctx.send("Głosowanie za pominięciem przebiegło pomyślnie. Pieśń została pominięta!")
+                        self.playing = None
+                        ctx.voice_client.stop()
+                        self.task.cancel()
+                        self.loop = False
+                        self.voters = []
+                        self.vote_switch = 0
+                        self.vote_context = None
+                        # noinspection PyTypeChecker
+                        asyncio.run(await Player.main(self, ctx))
+            else:
+                await ctx.send("BŁĄD: Nie możesz głosować, ponieważ jesteś na innym kanale głosowym niż bot")
 
 class Tools(object):
     def __init__(self, id):

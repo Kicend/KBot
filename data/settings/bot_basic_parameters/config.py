@@ -13,7 +13,7 @@ except FileNotFoundError:
 
 # Podstawowe parametry bota
 commands_prefix = "!"
-version = "0.37-2"
+version = "0.38"
 boot_date = time.strftime("%H:%M %d.%m.%Y UTC")
 __cogs__ = [
     "data.modules.cogs.Entertainment",
